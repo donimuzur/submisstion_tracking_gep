@@ -1,0 +1,70 @@
+<odoo>
+    <data>
+        <record model="ir.module.category" id="module_submission_tracking_gep">
+            <field name="name">Submission Tracking GEP</field>
+            <field name="description">Submission Tracking GEP</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="submission_tracking_gep_group_verificator" model="res.groups">
+            <field name="name">Verifikator</field>
+            <field name="comment">Verifikator</field>
+            <field name="category_id" ref="module_submission_tracking_gep"/>
+        </record>
+        <record id="submission_tracking_gep_group_approval" model="res.groups">
+            <field name="name">Approval</field>
+            <field name="comment">Approval</field>
+            <field name="category_id" ref="module_submission_tracking_gep"/>
+        </record>
+        <record id="submission_tracking_gep_group_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="comment">user</field>
+            <field name="category_id" ref="module_submission_tracking_gep"/>
+        </record>
+
+        <record id="submission_gep_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_user'))
+                    ]"/>
+        </record>
+        <record id="submission_menu_categ" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_user'))
+                    ]"/>
+        </record>
+        <record id="voucher_payable_menu_act" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_user'))
+                    ]"/>
+        </record>
+        <record id="submission_gep_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_verificator'))
+                    ]"/>
+        </record>
+        <record id="submission_menu_categ" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_verificator'))
+                    ]"/>
+        </record>
+        <record id="voucher_payable_menu_act" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_verificator'))
+                    ]"/>
+        </record>
+        <record id="submission_gep_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_approval'))
+                    ]"/>
+        </record>
+        <record id="submission_menu_categ" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_approval'))
+                    ]"/>
+        </record>
+        <record id="voucher_payable_menu_act" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_approval'))
+                    ]"/>
+        </record>
+    </data>
+</odoo>
