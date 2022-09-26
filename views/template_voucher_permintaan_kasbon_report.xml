@@ -1,21 +1,6 @@
 <odoo>
     <data>
-        <record id="paperFormat_payment_voucher" model="report.paperformat">
-            <field name="name">voucher F4</field>
-            <field name="default" eval="True" />
-            <field name="format">custom</field>
-            <field name="page_height">330</field>
-            <field name="page_width">210</field>
-            <field name="orientation">Portrait</field>
-            <field name="margin_top">40</field>
-            <field name="margin_bottom">40</field>
-            <field name="margin_left">7</field>
-            <field name="margin_right">7</field>
-            <field name="header_line" eval="False" />
-            <field name="header_spacing">35</field>
-            <field name="dpi">90</field>
-        </record>
-        <template id="report_voucher_payable">
+        <template id="report_voucher_permintaan_kasbon">
             <div class="header" t-att-style="report_header_style" >
                 <div align="center">
                     <img t-if="image" t-att-src="image_data_uri(image)" style="max-width:100%"/>
@@ -31,6 +16,33 @@
                 <t t-call="web.layout">
                     <div class="page">
                         <div class="article">
+                            <div id="voucher_nomor" class="row mt8 mb8">
+                                <div class="col-9  mb-8" >
+                                      <![CDATA[&nbsp;&nbsp;]]>
+                                </div>
+                                <div class="col-3  mb-8" >
+                                    <table style="width: 100%">
+                                        <tbody>
+                                            <tr style="border:1px solid black">
+                                                <td class="text-center"  style="border:1px solid black;width: 30%;background-color: #33C7FF;">
+                                                    <strong>Nomor PUM </strong>
+                                                </td>
+                                                <td class="text-left"  style="border:1px solid black;width: 70%;padding-left=2px">
+                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.name"/> 
+                                                </td>
+                                            </tr>
+                                            <tr style="border:1px solid black">
+                                                <td class="text-center"  style="border:1px solid black;width: 30%;background-color: #33C7FF;">
+                                                    <strong>Tanggal  </strong>
+                                                </td>
+                                                <td class="text-left"  style="border:1px solid black;width: 70%;padding-left=2px">
+                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.tanggal"/> 
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>      
+                                </div>
+                            </div>
                             <div id="cara_pembayaran" class="row mt8 mb8">
                                 <div class="col-2 mt8" style="height:90px;background-color:#33C7FF;border-radius:1px;border: 1px solid black">  
                                     <div class="col-12" style="vertical-align:middle;text-align:center;padding:30px 0">
@@ -90,10 +102,18 @@
                                         <tbody>
                                             <tr>
                                                 <td class="text-left"  style="width: 30%">
-                                                    <strong>Nomor</strong>
+                                                    <strong>BANK</strong>
                                                 </td>
                                                 <td class="text-left"  style="width: 70%">
-                                                    : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.name"/> 
+                                                    : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bank_nama_bilyet"/> 
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-left"  style="width: 30%">
+                                                    <strong>No. Bilyet</strong>
+                                                </td>
+                                                <td class="text-left"  style="width: 70%">
+                                                    : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bank_no_bilyet"/> 
                                                 </td>
                                             </tr>
                                             <tr>
@@ -101,20 +121,20 @@
                                                     <strong>Tanggal  </strong>
                                                 </td>
                                                 <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.tanggal"/> 
+                                                    :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bank_tanggal_bilyet"/> 
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>      
                                 </div>
                             </div>
-                            <div id="voucher_payable_details" class="row" style="margin-top:100px">
-                                <div class="col-8  mb-8" >
+                            <div id="voucher_permintaan_kasbon_details" class="row" style="margin-top:100px">
+                                <div class="col-12  mb-8" >
                                     <table style="width: 100%">
                                         <tbody>
                                             <tr>
                                                 <td class="text-left"  style="width: 29%">
-                                                    <strong>Dibayarkan Kepada  </strong>
+                                                    <strong>Nama  </strong>
                                                 </td>
                                                 <td style="width: 1%">:</td>
                                                 <td class="text-left"  style="width: 70%;padding-left=2px">
@@ -123,20 +143,11 @@
                                             </tr>
                                             <tr>
                                                 <td class="text-left"  style="width: 29%">
-                                                    <strong>Alamat  </strong>
+                                                    <strong>Unit Kerja  </strong>
                                                 </td>
                                                 <td style="width: 1%">:</td>
                                                 <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bayar_alamat"/> 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 29%">
-                                                    <strong>Kode Anggaran  </strong>
-                                                </td>
-                                                <td style="width: 1%">:</td>
-                                                <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.kode_anggaran"/> 
+                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bayar_unit_kerja"/> 
                                                 </td>
                                             </tr>
                                             <tr>
@@ -148,43 +159,12 @@
                                                     <![CDATA[&nbsp;&nbsp;]]><strong><span t-esc="data.total_uang"  t-options='{"widget": "monetary", "display_currency": res_company.currency_id}'/></strong> 
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 29%">
-                                                    <strong>Terbilang  </strong>
-                                                </td>
-                                                <td style="width: 1%">:</td>
-                                                <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]>  <span t-esc="data.total_uang_terbilang"/> 
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>      
-                                </div>
-                                <div class="col-4  mb-8" >
-                                    <table style="width: 100%">
-                                        <tbody>
-                                            <tr style="border:1px solid black">
-                                                <td class="text-center"  style="border:1px solid black;width: 30%;background-color: #33C7FF;">
-                                                    <strong>BPK. No.  </strong>
-                                                </td>
-                                                <td class="text-left"  style="border:1px solid black;width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bpk_no"/> 
-                                                </td>
-                                            </tr>
-                                            <tr style="border:1px solid black">
-                                                <td class="text-center"  style="border:1px solid black;width: 30%;background-color: #33C7FF;">
-                                                    <strong>Tanggal  </strong>
-                                                </td>
-                                                <td class="text-left"  style="border:1px solid black;width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bpk_tanggal"/> 
-                                                </td>
-                                            </tr>
                                         </tbody>
                                     </table>      
                                 </div>
                             </div>
 
-                            <div id="uraian_pembayaran" style="margin-top:50px">
+                            <!-- <div id="uraian_pembayaran" style="margin-top:50px">
                                 <table style="width: 100%">
                                     <thead>
                                         <tr style="height:60">
@@ -222,7 +202,7 @@
                                         </tr>
                                     </tbody>
                                 </table>   
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </t>
@@ -304,13 +284,13 @@
             </div>
         </template>
       
-        <report id="action_print_report_voucher_payable" 
-            model="voucher.payable"
-            string="Print Voucher Payable"
+        <report id="action_print_report_voucher_permintaan_kasbon" 
+            model="voucher.permintaan.kasbon"
+            string="Print Voucher Permintaan Kasbon"
             report_type="qweb-pdf"
-            name="payment_voucher.report_voucher_payable"
+            name="payment_voucher.report_voucher_permintaan_kasbon"
             attachment_use="False"
             paperformat="payment_voucher.paperFormat_payment_voucher"
-            file="payment_voucher.report_voucher_payable"/>
+            file="payment_voucher.report_voucher_permintaan_kasbon"/>
     </data>
 </odoo>

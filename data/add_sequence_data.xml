@@ -1,0 +1,28 @@
+<odoo>
+    <data noupdate="1">
+         <record model="ir.sequence" id="voucher_payable_sequence">
+            <field name="name">Voucher Payable Sequences</field>
+            <field name="code">voucher_payable_sequence</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">VP/%(year)s/%(month)s/%(day)s/</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record model="ir.sequence" id="voucher_permintaan_kasbon_sequence">
+            <field name="name">Voucher Permintaan Kasbon Sequences</field>
+            <field name="code">voucher_permintaan_kasbon_sequence</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">VK/%(year)s/%(month)s/%(day)s/</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record model="ir.sequence" id="voucher_pertanggungjawaban_kasbon_sequence">
+            <field name="name">Voucher PertanggungJawaban Kasbon Sequences</field>
+            <field name="code">voucher_pertanggungjawaban_kasbon_sequence</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">VPK/%(year)s/%(month)s/%(day)s/</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+    </data>
+</odoo>

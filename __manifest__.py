@@ -15,11 +15,14 @@
     'application': True,
     # always loaded
     'data': [
-        'security/ir.model.access.csv',
+        'data/add_sequence_data.xml',
         'views/voucher_payable_views.xml',
         'security/submission_tracking_gep_group_access.xml',
         'security/security.xml',
         'views/template_voucher_payable_report.xml',
+        'views/voucher_permintaan_kasbon_views.xml',
+        'security/ir.model.access.csv',
+        'security/voucher_permintaan_kasbon_security.xml',
     ],
 }
 

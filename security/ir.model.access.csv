@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_payment_voucher,voucher.payable,model_voucher_payable,,1,1,1,1
+access_voucher_payable,voucher.payable,model_voucher_payable,,1,1,1,1
 access_uraian_pembayaran_voucher_payable,uraian.pembayaran.voucher.payable,model_uraian_pembayaran_voucher_payable,,1,1,1,1
+access_voucher_permintaan_kasbon,voucher.permintaan.kasbon,model_voucher_permintaan_kasbon,,1,1,1,1
+access_uraian_rencana_penggunaan_uang_muka,uraian.rencana.penggunaan.uang.muka,model_uraian_rencana_penggunaan_uang_muka,,1,1,1,1

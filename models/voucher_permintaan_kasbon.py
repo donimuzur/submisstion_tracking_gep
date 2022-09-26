@@ -4,15 +4,15 @@ from odoo.exceptions import UserError, ValidationError
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import base64
-      
-class VoucherPayable(models.Model):
-    _name = 'voucher.payable'
-    _description = 'Voucher Pengeluaran Kas/Bank'
+
+class VoucherPermintaanKasbon(models.Model):
+    _name = 'voucher.permintaan.kasbon'
+    _description = 'Voucher Permintaan kasbon (Uang Muka)'
     
     @api.model
     def _get_default_name(self):
       next= False
-      sequence = self.env['ir.sequence'].search([('code','=','voucher_payable_sequence')])
+      sequence = self.env['ir.sequence'].search([('code','=','voucher_permintaan_kasbon_sequence')])
       next= sequence.get_next_char(sequence.number_next_actual)   
       return next
     
@@ -20,45 +20,52 @@ class VoucherPayable(models.Model):
     def unlink(self):
       if self.state == 'finished':
          raise ValidationError(_('Tidak bisa dihapus, dokumen sudah selesai'))
-      self.mapped('uraian_pembayaran_voucher_ids').unlink()
+      self.mapped('uraian_rencana_penggunaan_uang_muka_ids').unlink()
       self.mapped('attachment_ids').unlink()
-      return super(VoucherPayable, self).unlink()       
+      return super(VoucherPermintaanKasbon, self).unlink()       
       
     @api.model
     def create(self, values):
-      res = super(VoucherPayable,self).create(values)
-      if not res.uraian_pembayaran_voucher_ids:
+      res = super(VoucherPermintaanKasbon,self).create(values)
+      if not res.uraian_rencana_penggunaan_uang_muka_ids:
         raise ValidationError(_('Uraian tidak boleh kosong'))
-      res.name=self.env['ir.sequence'].next_by_code('voucher_payable_sequence')
+      res.name=self.env['ir.sequence'].next_by_code('voucher_permintaan_kasbon_sequence')
       return res
     
     @api.multi
     def write(self, values):
-      if self.state == 'onprocess' and values['bpk_no']  and  values['bpk_tanggal']:
+      if self.state == 'onprocess' and values['diterima_oleh']:
           values["state"] = "finished"
-      res = super(VoucherPayable,self).write(values)
+          values["dibayar_oleh"] = self.env.uid
+          values["dibayar_tanggal"] = fields.Date.today()
+          values["diterima_tanggal"] = fields.Date.today()
+      res = super(VoucherPermintaanKasbon,self).write(values)
       return res
     
-    name = fields.Char(string='No Voucher')
+    name = fields.Char(string='Nomor PUM')
+    tanggal = fields.Date(string='Tanggal',default=fields.Date.today())
+    
     state = fields.Selection([('draft', 'Draft'),('cancelled', 'Cancelled'),('submitted', 'Submitted'),('confirmed', 'Confirmed'),('validated', 'Validated'),('onprocess', 'On Process'),('finished', 'Finished') ], string='Status',
       required=True, readonly=True, copy=False, default='draft')
-    cara_pembayaran = fields.Selection(string="Cara Pembayaran", selection=[(1,'Cheque / Giro / TT'),(2, 'Transfer'),(3, 'Tunai'),(4, 'Dibayar scr Bertahap')], default=3, required=True)
     
-    bank_nama = fields.Char(string='BANK')
-    tanggal = fields.Date(string='Tanggal',default=fields.Date.today())
+    cara_pembayaran = fields.Selection(string="Cara Pembayaran", selection=[(1,'Cheque / Giro / TT'),(2, 'Transfer'),(3, 'Tunai'),(4, 'Dibayar scr Bertahap')], default=3, required=True)
+    bank_no_bilyet = fields.Char(string='No. Bilyet')
+    bank_nama_bilyet = fields.Char(string='Bank')
+    bank_tanggal_bilyet = fields.Date(string='Tgl. Bilyet',default=fields.Date.today())
+    
+    bank_nama = fields.Char(string='Bank')
     bank_ac_name = fields.Char(string='Nama Pemilik Rek')
     bank_ac_no = fields.Char(string='A/C No')
     
-    uraian_pembayaran_voucher_ids = fields.One2many('uraian.pembayaran.voucher.payable', 'voucher_payable_id', help='Daftar uraian pembayaran', required=True)
-    
-    bayar_to = fields.Char(string='Dibayarkan Kepada')
-    bayar_alamat = fields.Char(string='Alamat')
+    bayar_to = fields.Char(string='Nama')
+    bayar_nik = fields.Char(string='NIK')
+    bayar_unit_kerja = fields.Char(string='Unit Kerja')
     kode_anggaran = fields.Char(string='Kode Anggaran')
     total_uang = fields.Float(compute='_get_total',string='Jumlah Uang')
     total_uang_terbilang = fields.Char(compute='_get_terbilang',string='Terbilang')
+    dilaksanakan_pada_tanggal = fields.Date(string='Dilaksanakan pada tanggal', required=True)
     
-    bpk_no = fields.Char(string='BPK. No.')
-    bpk_tanggal = fields.Date(string='BPK Tanggal')
+    uraian_rencana_penggunaan_uang_muka_ids =fields.One2many('uraian.rencana.penggunaan.uang.muka', 'voucher_kasbon_id', help='Daftar uraian pembayaran', required=True)
     
     attachment_ids = fields.Many2many('ir.attachment',  string="Attachments")
     
@@ -76,6 +83,12 @@ class VoucherPayable(models.Model):
     
     dibukukan_oleh = fields.Many2one(comodel_name='res.users', string='Dibukukan Oleh')
     dibukukan_tanggal = fields.Date(string='Dibukukan Tgl')
+    
+    diterima_oleh = fields.Char( string='Diterima Oleh')
+    diterima_tanggal = fields.Date(string='Diterima Tgl')
+    
+    dibayar_oleh = fields.Many2one(comodel_name='res.users', string='Dibayar Oleh')
+    dibayar_tanggal = fields.Date(string='Dibayar Tgl')
     
     keterangan = fields.Text(string='Keterangan')
     
@@ -107,10 +120,10 @@ class VoucherPayable(models.Model):
         self.is_visible_approval_button = False
         if  self.env.user.has_group('payment_voucher.submission_tracking_gep_group_approval') :
             self.is_visible_approval_button = True      
-      
-    @api.depends('uraian_pembayaran_voucher_ids')
+
+    @api.depends('uraian_rencana_penggunaan_uang_muka_ids')
     def _get_total(self):
-        for rec_uraian in self.uraian_pembayaran_voucher_ids:
+        for rec_uraian in self.uraian_rencana_penggunaan_uang_muka_ids:
             self.total_uang = rec_uraian.nominal+self.total_uang
     
     @api.depends('total_uang')
@@ -128,7 +141,7 @@ class VoucherPayable(models.Model):
         'state': state,
         'diajukan_oleh':self.env.uid,
         'diajukan_tanggal':fields.Date.today()
-        })
+      })
     
     def cancel(self):
       self.write({
@@ -139,19 +152,21 @@ class VoucherPayable(models.Model):
     
     def set_draft(self):
       return self.write({
-          'active':True,
-          'state': 'draft',
-          'bpk_no':NULL,
-          'bpk_tanggal':NULL,
-          'diajukan_oleh':NULL,
-          'diajukan_tanggal':NULL,
-          'direkomendasi_oleh':NULL,
-          'direkomendasi_tanggal':NULL,
-          'disetujui_oleh':NULL,
-          'disetujui_tanggal':NULL,
-          'diverifikasi_oleh':NULL,
-          'diverifikasi_tanggal':NULL
-        })
+        'active':True,
+        'state': 'draft',
+        'diajukan_oleh':NULL,
+        'diajukan_tanggal':NULL,
+        'direkomendasi_oleh':NULL,
+        'direkomendasi_tanggal':NULL,
+        'disetujui_oleh':NULL,
+        'disetujui_tanggal':NULL,
+        'diverifikasi_oleh':NULL,
+        'diverifikasi_tanggal':NULL,
+        'diterima_oleh':NULL,
+        'diterima_tanggal':NULL,
+        'dibayar_oleh':NULL,
+        'dibayar_tanggal':NULL
+      })
       
     def konfirmasi(self):
       return self.write({
@@ -172,21 +187,21 @@ class VoucherPayable(models.Model):
           'state': 'onprocess',
           'disetujui_oleh':self.env.uid,
           'disetujui_tanggal':fields.Date.today()
-      }) 
+      })
       
-    def action_print_voucher_payable(self):
-      return self.env.ref('action_print_report_voucher_payable').report_action(self)
+    def action_print_voucher_permintaan_kasbon(self):
+      return self.env.ref('action_print_report_voucher_permintaan_kasbon').report_action(self)
     
 
-class PrintVoucherPayable(models.AbstractModel):
-    _name = 'report.payment_voucher.report_voucher_payable'
+class PrintVoucherPermintaanKasbon(models.AbstractModel):
+    _name = 'report.payment_voucher.report_voucher_permintaan_kasbon'
     
     @api.model
     def _get_report_values(self,docids, data=None):
-        data_voucher = self.env['voucher.payable'].search([('id', '=', docids)])
+        data_voucher = self.env['voucher.permintaan.kasbon'].search([('id', '=', docids)])
         filename = modules.get_module_resource('payment_voucher', 
         'static/src/img', 
-        'header-transparent.png')
+        'header-permintaan-kasbon-transparent.png')
         f = open(filename, mode="rb")
         image = f.read()
         image = base64.b64encode(image)    
@@ -203,20 +218,3 @@ class PrintVoucherPayable(models.AbstractModel):
             'image_signed':image_signed,
             'data': data_voucher
         }
-
-
-class IrAttachment(models.Model):
-    _inherit = 'ir.attachment'
-    def human_size(size):
-      units = "Bytes,Kb,Mb,Gb,Tb,Pb,Eb,Zb,Yb".split(',')
-      i = 0
-      while size >= 1024:
-          size /= 1024
-          i += 1
-      return "%.4g %s " % (size, units[i])
-    
-    @api.one
-    @api.constrains('file_size')
-    def _check_mimetype_file_size(self):
-        if 'file_size' in self.env.context and self.env.context['file_size'] < self.file_size:
-            raise ValidationError("Only text files smaller than %s are allowed!" % human_size(self.env.context['file_size']))
