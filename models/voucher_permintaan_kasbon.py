@@ -61,6 +61,7 @@ class VoucherPermintaanKasbon(models.Model):
     bayar_nik = fields.Char(string='NIK')
     bayar_unit_kerja = fields.Char(string='Unit Kerja')
     kode_anggaran = fields.Char(string='Kode Anggaran')
+    sisa_uang_muka_lama = fields.Float(string='Sisa Uang Muka Lama')
     total_uang = fields.Float(compute='_get_total',string='Jumlah Uang')
     total_uang_terbilang = fields.Char(compute='_get_terbilang',string='Terbilang')
     dilaksanakan_pada_tanggal = fields.Date(string='Dilaksanakan pada tanggal', required=True)

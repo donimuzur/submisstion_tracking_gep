@@ -21,8 +21,10 @@
         'security/security.xml',
         'views/template_voucher_payable_report.xml',
         'views/voucher_permintaan_kasbon_views.xml',
+        'views/template_voucher_permintaan_kasbon_report.xml',
         'security/ir.model.access.csv',
         'security/voucher_permintaan_kasbon_security.xml',
+            
     ],
 }
 

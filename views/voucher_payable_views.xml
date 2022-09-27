@@ -7,6 +7,7 @@
                 <tree delete='0' default_order="write_date desc" decoration-warning="state=='onprocess'"  decoration-info="state == 'draft'" decoration-success="state=='finished'" decoration-danger="state=='cancelled'">
                     <!-- Add your fields here -->
                     <field name="name"/>
+                    <field name="diajukan_oleh"/>
                     <field name="state"/>
                 </tree>
             </field>

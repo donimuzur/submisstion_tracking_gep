@@ -196,6 +196,7 @@
                                     <tbody>
                                         <t t-set="current_subtotal" t-value="0"/>
                                         <t t-set="currency_id" t-value="0"/>
+                                        <t t-set="total_index_uraian_rencana_penggunaan_uang_muka" t-value="0"/>
                                         <t t-foreach="data.uraian_pembayaran_voucher_ids" t-as="uraian">
                                             <tr >
                                                 
@@ -211,6 +212,21 @@
                                                 </td>
                                             </tr>
                                             <t t-set="current_subtotal" t-value="current_subtotal+uraian.nominal"/>
+                                            <t t-set="total_index_uraian_rencana_penggunaan_uang_muka" t-value="uraian_index+1"/>
+                                        </t>
+                                        <t t-set="qty" t-value="5-total_index_uraian_rencana_penggunaan_uang_muka"/>
+                                        <t t-foreach="range(qty)" t-as="item">
+                                             <tr >
+                                                <td style="border:1px solid black">
+                                                    <![CDATA[&nbsp;&nbsp;]]>
+                                                </td>
+                                                <td style="border:1px solid black" >
+                                                    <![CDATA[&nbsp;&nbsp;]]>
+                                                </td>
+                                                <td style="border:1px solid black">
+                                                    <![CDATA[&nbsp;&nbsp;]]>
+                                                </td>
+                                            </tr>
                                         </t>
                                         <tr style="background-color:#DADADA;">
                                             <td colspan='2' class="text-center" style="border:1px solid black">

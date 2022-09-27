@@ -7,6 +7,7 @@
                 <tree delete='0' default_order="write_date desc" decoration-warning="state=='onprocess'"  decoration-info="state == 'draft'" decoration-success="state=='finished'" decoration-danger="state=='cancelled'">
                     <!-- Add your fields here -->
                     <field name="name"/>
+                    <field name="diajukan_oleh"/>
                     <field name="dilaksanakan_pada_tanggal"/>
                     <field name="state"/>
                 </tree>
@@ -26,9 +27,6 @@
                         <button name="konfirmasi" class="oe_highlight"   string="Konfirmasi" type="object" attrs="{'invisible':['|',('is_visible_konfimasi_button','!=',True),('state','!=','submitted')]}"/>
                         <button name="verifikasi" class="oe_highlight"  string="Verifikasi" type="object"  attrs="{'invisible':['|',('is_visible_verifikasi_button','!=',True),('state','!=','confirmed')]}"/>
                         <button name="setujui" class="oe_highlight" string="Setujui" type="object" attrs="{'invisible':['|',('is_visible_approval_button','!=',True),('state','!=','validated')]}" />
-                        <!-- <button name="konfirmasi" class="oe_highlight" states="submitted" attrs="{'invisible':['|',('state','in',user.groups_id),('state','=','cancelled')]}" string="Konfirmasi" type="object"/>
-                        <button name="verifikasi" class="oe_highlight" states="confirmed" attrs="{'invisible':['|',('state','=','draft'),('state','=','cancelled')]}" string="Verifikasi" type="object"/>
-                        <button name="setujui" class="oe_highlight" states="validated" attrs="{'invisible':['|',('state','=','draft'),('state','=','cancelled')]}" string="Setujui" type="object"/> -->
                         <button name="cancel" class="oe_highlight btn-danger" attrs="{'invisible':['|',('is_owner','=',False),('state','in',['draft','cancelled', 'finished'])]}" string="Cancel" type="object"/>
                         <button name="set_draft" class="oe_highlight" string="Set To Draft" type="object" attrs="{'invisible':['|',('state','!=','cancelled'),('is_owner','!=',True)]}" />
                         <field name="state" widget="statusbar" />                            
