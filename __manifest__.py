@@ -11,7 +11,7 @@
     'website': "https://www.geptambang.co.id",
     
     'version': '1.0',
-    'depends': ['base','product',],
+    'depends': ['base','product','mail'],
     'application': True,
     # always loaded
     'data': [
@@ -24,7 +24,11 @@
         'views/template_voucher_permintaan_kasbon_report.xml',
         'security/ir.model.access.csv',
         'security/voucher_permintaan_kasbon_security.xml',
-            
+        'views/voucher_pertanggungjawaban_kasbon_views.xml',
+        'views/template_voucher_pertanggungjawaban_kasbon_report.xml',
+        'security/voucher_pertanggungjawaban_kasbon_security.xml',  
+        'views/dokumen_dashboard_views.xml',         
+        'security/dashboard_security.xml'
     ],
 }
 

@@ -1,12 +1,12 @@
 <odoo>
     <data>
-        <template id="report_voucher_permintaan_kasbon">
+        <template id="report_voucher_pertanggungjawaban_kasbon">
             <div class="header" t-att-style="report_header_style" >
                 <div align="center">
                     <img t-if="image" t-att-src="image_data_uri(image)" style="max-width:100%"/>
                 </div> 
                  <div class="col-12 mb4">
-                    <div style="border-bottom: 1px solid #FFEB3B;"/>
+                    <div style="border-bottom: 1px solid #D94D69;"/>
                 </div>
                 <div class="col-12 mb4">
                     <div style="border-bottom: 1px solid black;"/>
@@ -16,35 +16,8 @@
                 <t t-call="web.layout">
                     <div class="page">
                         <div class="article">
-                            <div id="voucher_nomor" class="row mt8 mb8">
-                                <div class="col-8  mb-8" >
-                                      <![CDATA[&nbsp;&nbsp;]]>
-                                </div>
-                                <div class="col-4  mb-8" >
-                                    <table style="width: 100%">
-                                    <tbody>
-                                            <tr>
-                                                <td class="text-left"  style="width: 50%">
-                                                    <strong>Nomor PUM</strong>
-                                                </td>
-                                                <td class="text-left"  style="width: 50%">
-                                                    : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.name"/> 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 50%">
-                                                    <strong>Tanggal </strong>
-                                                </td>
-                                                <td class="text-left"  style="width: 50%;padding-left=2px">
-                                                    :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.tanggal"/> 
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>      
-                                </div>
-                            </div>
                             <div id="cara_pembayaran" class="row mt8 mb8" style="margin-top:25px !important">
-                                <div class="col-2 mt8" style="height:90px;background-color:#FFEB3B;border-radius:1px;border: 1px solid black">  
+                                <div class="col-2 mt8" style="height:90px;background-color:#D94D69;border-radius:1px;border: 1px solid black">  
                                     <div class="col-12" style="vertical-align:middle;text-align:center;padding:30px 0">
                                         <strong style="font-size:12px;vertical-align: middle;text-align:center;">CARA PEMBAYARAN</strong>
                                     </div>    
@@ -128,8 +101,8 @@
                                     </table>      
                                 </div>
                             </div>
-                            <div id="voucher_permintaan_kasbon_details" class="row" style="margin-top:100px">
-                                <div class="col-12  mb-8" >
+                            <div id="voucher_pertanggungjawaban_kasbon_details" class="row" style="margin-top:100px">
+                                <div class="col-7  mb-8" >
                                     <table style="width: 100%">
                                         <tbody>
                                             <tr>
@@ -159,102 +132,152 @@
                                                     <![CDATA[&nbsp;&nbsp;]]><strong><span t-esc="data.total_uang"  t-options='{"widget": "monetary", "display_currency": res_company.currency_id}'/></strong> 
                                                 </td>
                                             </tr>
+                                            
+                                            <tr>
+                                                <td class="text-left"  style="width: 29%">
+                                                    <strong>Terbilang  </strong>
+                                                </td>
+                                                <td style="width: 1%">:</td>
+                                                <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                    <![CDATA[&nbsp;&nbsp;]]>  <span t-esc="data.total_uang_terbilang"/> 
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>      
                                 </div>
+                                <div id="voucher_nomor" class="col-5  mb-8">
+                                    <table style="width: 100%">
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-left"  style="width: 50%">
+                                                    <strong>PJUM No.</strong>
+                                                </td>
+                                                <td class="text-left"  style="width: 50%">
+                                                    : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.name"/> 
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-left"  style="width: 50%">
+                                                    <strong>PJUM Tanggal</strong>
+                                                </td>
+                                                <td class="text-left"  style="width: 50%;padding-left=2px">
+                                                    :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.tanggal"/> 
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-left"  style="width: 50%">
+                                                    <strong>PUM No.</strong>
+                                                </td>
+                                                <td class="text-left"  style="width: 50%">
+                                                    : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.voucher_permintaan_kasbon_id.name"/> 
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-left"  style="width: 50%">
+                                                    <strong>PUM Tanggal</strong>
+                                                </td>
+                                                <td class="text-left"  style="width: 50%;padding-left=2px">
+                                                    :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.voucher_permintaan_kasbon_id.tanggal"/> 
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>   
+                                </div>
                             </div>
 
-                            <div id="uraian_rencana_penggunaan_uang_muka" style="margin-top:50px;padding:3px;border:1px solid black;">
+                            <div id="uraian_penggunaan_uang_muka_ids" style="margin-top:50px;padding:3px;border:1px solid black;">
                                 <table style="width: 100%" >
                                     <thead>
+                                        <tr>
+                                            <th rowspan="2" class="text-center" style="vertical-align:middle;border:1px solid black;width:60%;background-color: #D94D69;"><span>Rencana Penggunaan Uang Muka</span></th>
+                                            <th colspan="2" class="text-center" style="border:1px solid black;width:60%;background-color: #D94D69;"><span>Pengeluaran</span></th>
+                                        </tr>
                                         <tr style="height:40px">
-                                            <th class="text-center" style="border:1px solid black;width:70%;background-color: #FFEB3B;"><span>Rencana Penggunaan Uang Muka</span></th>
-                                            <th class="text-center" style="border:1px solid black;width:20%;"><span>JUMLAH (Rp.)</span></th>
+                                            
+                                            <th class="text-center" style="border:1px solid black;width:20%;"><span>Rencana (Rp.)</span></th>
+                                            <th class="text-center" style="border:1px solid black;width:20%;"><span>Realisasi (Rp.)</span></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <t t-set="current_subtotal" t-value="0"/>
+                                        <t t-set="current_realisasi_subtotal" t-value="0"/>
                                         <t t-set="currency_id" t-value="0"/>
-                                        <t t-set="total_index_uraian_rencana_penggunaan_uang_muka" t-value="0"/>
-                                        <t t-foreach="data.uraian_rencana_penggunaan_uang_muka_ids" t-as="uraian">
+                                        <t t-set="total_index_uraian_penggunaan_uang_muka_ids" t-value="0"/>
+                                        <t t-foreach="data.uraian_penggunaan_uang_muka_ids" t-as="uraian">
                                             <tr >
                                                 
                                                 <t t-set="currency_id" t-value="uraian.currency_id"/>
-                                                <td style="border:1px solid black;width:70%">
+                                                <td style="border:1px solid black;width:60%">
                                                     <span t-esc="uraian.name"/>
                                                 </td>
-                                                <td class="text-right" style="border:1px solid black;width:70%" >
+                                                <td class="text-right" style="border:1px solid black;width:20%" >
                                                     <span t-esc="uraian.nominal" t-options='{"widget": "monetary", "display_currency": uraian.currency_id}'/>
+                                                </td>
+                                                
+                                                <td class="text-right" style="border:1px solid black;width:20%" >
+                                                    <span t-esc="uraian.nominal_realisasi" t-options='{"widget": "monetary", "display_currency": uraian.currency_id}'/>
                                                 </td>
                                             </tr>
                                             <t t-set="current_subtotal" t-value="current_subtotal+uraian.nominal"/>
-                                            <t t-set="total_index_uraian_rencana_penggunaan_uang_muka" t-value="uraian_index+1"/>
+                                            <t t-set="current_realisasi_subtotal" t-value="current_realisasi_subtotal+uraian.nominal_realisasi"/>
+                                            <t t-set="total_index_uraian_penggunaan_uang_muka_ids" t-value="uraian_index+1"/>
                                         </t>
-                                        <t t-set="qty" t-value="5-total_index_uraian_rencana_penggunaan_uang_muka"/>
+                                        <t t-set="qty" t-value="5-total_index_uraian_penggunaan_uang_muka_ids"/>
                                         <t t-foreach="range(qty)" t-as="item">
                                              <tr >
                                                 <td style="border:1px solid black">
                                                     <![CDATA[&nbsp;&nbsp;]]>
                                                 </td>
-                                                <td class="text-right" style="border:1px solid black" >
+                                                <td style="border:1px solid black" >
                                                     <![CDATA[&nbsp;&nbsp;]]>
                                                 </td>
-                                            </tr>
+                                                <td  style="border:1px solid black" >
+                                                    <![CDATA[&nbsp;&nbsp;]]>
+                                                </td>
+                                            </tr>                                            
                                         </t>
                                         <tr>
-                                            <td  class="text-center" style="border:1px solid black;background-color:#FFEB3B;">
+                                            <td  class="text-center" style="border:1px solid black;background-color:#D94D69;">
                                                 <strong>Total</strong>
                                             </td>
                                             <td class="text-right" style="border:1px solid black" >
                                                 <strong><span t-esc="current_subtotal" t-options='{"widget": "monetary", "display_currency": currency_id}'/></strong>
+                                            </td>
+                                            <td class="text-right" style="border:1px solid black" >
+                                                <strong><span t-esc="current_realisasi_subtotal" t-options='{"widget": "monetary", "display_currency": currency_id}'/></strong>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>     
                                 <table style="width: 100%;border:1px solid black;margin-top:5px">
                                     <tbody>
-                                        <tr style="heigth:60px">
-                                            <td class="text-left" style="width:10%">
-                                                <strong>Terbilang</strong>
+                                        <tr >
+                                            <td class="text-left" style="width:80%;border:1px solid black;">
+                                                <strong>Jumlah Uang Muka yang dipertanggungjawabkan</strong>
                                             </td>
-                                            <td class="text-left" style="width:90%">
-                                                :   &amp;nbsp;&amp;nbsp;<strong><span t-esc="data.total_uang_terbilang"/></strong>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <table style="width: 100%;margin-top:5px">
-                                    <tbody>
-                                        <tr style="border:1px solid black">
-                                            <td class="text-left" style="width:50%">
-                                                <strong>Dilaksanakan pada tanggal</strong>
-                                            </td>
-                                            <td class="text-left" style="width:50%">
-                                                :   &amp;nbsp;&amp;nbsp;<strong><span t-esc="data.dilaksanakan_pada_tanggal"/></strong>
+                                            <td class="text-right" style="width:20%;border:1px solid black;">
+                                                &amp;nbsp;&amp;nbsp;<strong><span t-esc="current_realisasi_subtotal" t-options='{"widget": "monetary", "display_currency": currency_id}'/></strong>
                                             </td>
                                         </tr>
-                                        <tr style="border:1px solid black">
-                                            <td class="text-left" style="width:50%">
-                                                <strong>Dipertanggungjawabkan pada tanggal</strong>
+                                        <tr >
+                                            <td class="text-left" style="width:80%;border:1px solid black;">
+                                                <strong>Jumlah Uang Muka yang telah diterima</strong>
                                             </td>
-                                            <td class="text-left" style="width:50%">
-                                                :   &amp;nbsp;&amp;nbsp;<strong>3 (tiga) hari kerja setelah kegiatan selesai</strong>
-                                            </td>
-                                        </tr>
-                                        <tr style="border:1px solid black">
-                                            <td class="text-left" style="width:50%">
-                                                <strong>Kode Anggaran</strong>
-                                            </td>
-                                            <td class="text-left" style="width:50%">
-                                                :   &amp;nbsp;&amp;nbsp;<strong><span t-esc="data.kode_anggaran"/></strong>
+                                            <td class="text-right" style="width:20%;border:1px solid black;">
+                                                &amp;nbsp;&amp;nbsp;<strong><span t-esc="current_subtotal" t-options='{"widget": "monetary", "display_currency": currency_id}'/></strong>
                                             </td>
                                         </tr>
-                                        <tr style="border:1px solid black">
-                                            <td class="text-left" style="width:50%">
-                                                <strong>Sisa Uang Muka Lama</strong>
+                                        <tr>
+                                            <td class="text-left" style="width:80%;border:1px solid black;">
+                                                <t t-if="current_subtotal &lt; current_realisasi_subtotal">
+                                                    <strong>Kekurangan  </strong>
+                                                </t>
+                                                <t t-else="">
+                                                    <strong>Sisa Uang Muka </strong>
+                                                </t>
                                             </td>
-                                            <td class="text-left" style="width:50%">
-                                                :   &amp;nbsp;&amp;nbsp;<strong><span t-esc="data.sisa_uang_muka_lama"  t-options='{"widget": "monetary", "display_currency": currency_id}'/></strong>
+                                            <td class="text-right" style="width:20%;border:1px solid black;background-color:#D94D69;">
+                                                &amp;nbsp;&amp;nbsp;<strong><span t-esc="current_subtotal-current_realisasi_subtotal" t-options='{"widget": "monetary", "display_currency": currency_id}'/></strong>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -268,23 +291,17 @@
             <div class="footer o_boxed_footer">
                 <table style="width: 100%">
                     <thead>
-                        <tr style="border:1px solid black">
-                            <th colspan='2' class="text-center" style="border:1px solid black;background-color: #FFEB3B;"><span>Permintaan</span></th>
-                            <th colspan='3' class="text-center" style="border:1px solid black;background-color: #FFEB3B;"><span>Pengeluaran</span></th>
-                            <th class="text-left" style="border:1px solid black;"><span>Tgl. &amp;nbsp;&amp;nbsp;</span><span t-esc="data.diterima_tanggal"/></th>
-                        </tr>
                         <tr style="border:1px solid black;">
-                            <th class="text-center" style="border:1px solid black;"><span>Diajukan</span></th>
-                            <th class="text-center" style="border:1px solid black;"><span>Direkomendasi</span></th>
-                            <th class="text-center" style="border:1px solid black;"><span>Diperiksa</span></th>
-                            <th class="text-center" style="border:1px solid black;"><span>Disetujui</span></th>
-                            <th class="text-center" style="border:1px solid black;"><span>Dibayar</span></th>
-                            <th class="text-center" style="border:1px solid black;"><span>Penerima</span></th>
+                            <th class="text-center" style="border:1px solid black;background-color: #D94D69;"><span>Yang Mempertanggungjawabkan</span></th>
+                            <th class="text-center" style="border:1px solid black;background-color: #D94D69;"><span>Direkomendasi</span></th>
+                            <th class="text-center" style="border:1px solid black;background-color: #D94D69;"><span>PEMERIKSA/VERIFIKASI</span></th>
+                            <th class="text-center" style="border:1px solid black;background-color: #D94D69;"><span>Disetujui Oleh</span></th>
+                            <th class="text-center" style="border:1px solid black;background-color: #D94D69;"><span>Penerima</span></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr style="height:100px">
-                            <td class="text-center" style="border:1px solid black;width:15%;max-width:100%;vertical-align: middle;text-align:center;">
+                            <td class="text-center" style="border:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
                                 <t t-if="data.diajukan_oleh" >
                                     <img t-att-src="image_data_uri(image_signed)" width="100px"/>
                                 </t>
@@ -306,7 +323,7 @@
                                     <span t-if="data.direkomendasi_oleh" t-esc="data.direkomendasi_oleh.name"/>
                                 </div>
                             </td>
-                            <td class="text-center" style="border:1px solid black;width:15%;max-width:100%;vertical-align: middle;text-align:center;">
+                            <td class="text-center" style="border:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
                                 <t t-if="data.diverifikasi_oleh" >
                                     <img t-att-src="image_data_uri(image_signed)" width="100px"/>
                                 </t>
@@ -327,19 +344,8 @@
                                 <div>
                                     <span t-if="data.disetujui_oleh" t-esc="data.disetujui_oleh.name"/>
                                 </div>
-                            </td>  
-                            <td class="text-center" style="border:1px solid black;width:15%;max-width:100%;vertical-align: middle;text-align:center;">
-                                <t t-if="data.dibayar_oleh" >
-                                    <img t-att-src="image_data_uri(image_signed)" width="100px"/>
-                                </t>
-                                <t t-else="" >
-                                    <![CDATA[&nbsp;&nbsp;]]>
-                                </t>
-                                <div>
-                                    <span t-if="data.dibayar_oleh" t-esc="data.dibayar_oleh.name"/>
-                                </div>
-                            </td>    
-                            <td class="text-center" style="border:1px solid black;width:15%;max-width:100%;vertical-align: middle;text-align:center;">
+                            </td> 
+                            <td class="text-center" style="border:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
                                 <t t-if="data.diterima_oleh" >
                                     <img t-att-src="image_data_uri(image_signed)" width="100px"/>
                                 </t>
@@ -365,9 +371,6 @@
                                 <strong>Tgl.  <span t-esc="data.disetujui_tanggal"/></strong>
                             </td>
                             <td class="text-left"  style="border:1px solid black;">
-                                <strong>Tgl.  <span t-esc="data.dibayar_tanggal"/></strong>
-                            </td>
-                            <td class="text-left"  style="border:1px solid black;">
                                 <strong>Tgl.  <span t-esc="data.diterima_tanggal"/></strong>
                             </td>
                         </tr>
@@ -376,13 +379,13 @@
             </div>
         </template>
       
-        <report id="action_print_report_voucher_permintaan_kasbon" 
-            model="voucher.permintaan.kasbon"
-            string="Print Voucher Permintaan Kasbon"
+        <report id="action_print_report_voucher_pertanggungjawaban_kasbon" 
+            model="voucher.pertanggungjawaban.kasbon"
+            string="Print Voucher pertanggungjawaban Kasbon"
             report_type="qweb-pdf"
-            name="payment_voucher.report_voucher_permintaan_kasbon"
+            name="payment_voucher.report_voucher_pertanggungjawaban_kasbon"
             attachment_use="False"
             paperformat="payment_voucher.paperFormat_payment_voucher"
-            file="payment_voucher.report_voucher_permintaan_kasbon"/>
+            file="payment_voucher.report_voucher_pertanggungjawaban_kasbon"/>
     </data>
 </odoo>

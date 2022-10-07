@@ -1,6 +1,6 @@
 <odoo>
     <data>
-         <record model="ir.rule" id="model_voucher_payable_role_user">
+         <record model="ir.rule" id="model_voucher_permintaan_role_user">
             <field name="name">Submission Tracking GEP User Role</field>
             <field name="model_id" ref="model_voucher_permintaan_kasbon"/>
             <field name="domain_force">['|',('create_uid','=',user.id),('create_uid', 'in', [g.id for g in user.bawahan_ids])]</field>
@@ -12,7 +12,7 @@
                 (4,ref('submission_tracking_gep_group_user'))
             ]"/>
         </record>
-        <record model="ir.rule" id="model_voucher_payable_role_verifikator">
+        <record model="ir.rule" id="model_voucher_permintaan_role_verifikator">
             <field name="name">Submission Tracking GEP User Verifikator</field>
             <field name="model_id" ref="model_voucher_permintaan_kasbon"/>
             <field name="domain_force">[('state','!=','draft')]</field>
@@ -24,7 +24,19 @@
                 (4,ref('submission_tracking_gep_group_verificator'))
             ]"/>
         </record>
-        <record model="ir.rule" id="model_voucher_payable_role_approval">
+        <record model="ir.rule" id="model_voucher_permintaan_role_validator">
+            <field name="name">Submission Tracking GEP User validator</field>
+            <field name="model_id" ref="model_voucher_permintaan_kasbon"/>
+            <field name="domain_force">[('state','!=','draft')]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="groups" eval="[
+                (4,ref('submission_tracking_gep_group_validator'))
+            ]"/>
+        </record>
+        <record model="ir.rule" id="model_voucher_permintaan_role_approval">
             <field name="name">Submission Tracking GEP User Approval</field>
             <field name="model_id" ref="model_voucher_permintaan_kasbon"/>
             <field name="domain_force">[('state','!=','draft')]</field>

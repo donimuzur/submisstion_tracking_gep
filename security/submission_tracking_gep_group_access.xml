@@ -10,6 +10,11 @@
             <field name="comment">Verifikator</field>
             <field name="category_id" ref="module_submission_tracking_gep"/>
         </record>
+        <record id="submission_tracking_gep_group_validator" model="res.groups">
+            <field name="name">Validator</field>
+            <field name="comment">Validator</field>
+            <field name="category_id" ref="module_submission_tracking_gep"/>
+        </record>
         <record id="submission_tracking_gep_group_approval" model="res.groups">
             <field name="name">Approval</field>
             <field name="comment">Approval</field>

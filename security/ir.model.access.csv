@@ -3,3 +3,8 @@ access_voucher_payable,voucher.payable,model_voucher_payable,,1,1,1,1
 access_uraian_pembayaran_voucher_payable,uraian.pembayaran.voucher.payable,model_uraian_pembayaran_voucher_payable,,1,1,1,1
 access_voucher_permintaan_kasbon,voucher.permintaan.kasbon,model_voucher_permintaan_kasbon,,1,1,1,1
 access_uraian_rencana_penggunaan_uang_muka,uraian.rencana.penggunaan.uang.muka,model_uraian_rencana_penggunaan_uang_muka,,1,1,1,1
+access_voucher_pertanggungjawaban_kasbon,voucher.pertanggungjawaban.kasbon,model_voucher_pertanggungjawaban_kasbon,,1,1,1,1
+access_dokumen_dashboard,dokumen.dashboard,model_dokumen_dashboard,,1,1,1,1
+access_bpk_details_voucher_payable,bpk.details.voucher.payable,model_bpk_details_voucher_payable,,1,1,1,1
+
+

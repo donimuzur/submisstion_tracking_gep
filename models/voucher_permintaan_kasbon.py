@@ -7,6 +7,7 @@ import base64
 
 class VoucherPermintaanKasbon(models.Model):
     _name = 'voucher.permintaan.kasbon'
+    _inherit = 'mail.thread'
     _description = 'Voucher Permintaan kasbon (Uang Muka)'
     
     @api.model
@@ -16,13 +17,13 @@ class VoucherPermintaanKasbon(models.Model):
       next= sequence.get_next_char(sequence.number_next_actual)   
       return next
     
-    @api.model
-    def unlink(self):
-      if self.state == 'finished':
-         raise ValidationError(_('Tidak bisa dihapus, dokumen sudah selesai'))
-      self.mapped('uraian_rencana_penggunaan_uang_muka_ids').unlink()
-      self.mapped('attachment_ids').unlink()
-      return super(VoucherPermintaanKasbon, self).unlink()       
+    # @api.model
+    # def unlink(self):
+    #   if self.state == 'finished':
+    #      raise ValidationError(_('Tidak bisa dihapus, dokumen sudah selesai'))
+    #   self.mapped('uraian_rencana_penggunaan_uang_muka_ids').unlink()
+    #   self.mapped('attachment_ids').unlink()
+    #   return super(VoucherPermintaanKasbon, self).unlink()       
       
     @api.model
     def create(self, values):
@@ -45,30 +46,33 @@ class VoucherPermintaanKasbon(models.Model):
     name = fields.Char(string='Nomor PUM')
     tanggal = fields.Date(string='Tanggal',default=fields.Date.today())
     
-    state = fields.Selection([('draft', 'Draft'),('cancelled', 'Cancelled'),('submitted', 'Submitted'),('confirmed', 'Confirmed'),('validated', 'Validated'),('onprocess', 'On Process'),('finished', 'Finished') ], string='Status',
-      required=True, readonly=True, copy=False, default='draft')
+    state = fields.Selection([('draft', 'Draft'),('cancelled', 'Cancelled'),('submitted', 'Submitted'),('confirmed', 'Confirmed'),('verified', 'verified'),('validated', 'Validated'),('onprocess', 'On Process'),('finished', 'Finished') ], string='Status',
+      required=True, readonly=True, copy=False, default='draft', 
+      track_visibility='onchange'
+      )
     
-    cara_pembayaran = fields.Selection(string="Cara Pembayaran", selection=[(1,'Cheque / Giro / TT'),(2, 'Transfer'),(3, 'Tunai'),(4, 'Dibayar scr Bertahap')], default=3, required=True)
-    bank_no_bilyet = fields.Char(string='No. Bilyet')
-    bank_nama_bilyet = fields.Char(string='Bank')
-    bank_tanggal_bilyet = fields.Date(string='Tgl. Bilyet',default=fields.Date.today())
+    cara_pembayaran = fields.Selection(string="Cara Pembayaran", selection=[(1,'Cek / Giro / TT'),(2, 'Transfer'),(3, 'Tunai'),(4, 'Dibayar scr Bertahap')], default=3, required=True,track_visibility='onchange')
+   
+    bank_nama = fields.Char(string='BANK',track_visibility='onchange')
     
-    bank_nama = fields.Char(string='Bank')
-    bank_ac_name = fields.Char(string='Nama Pemilik Rek')
-    bank_ac_no = fields.Char(string='A/C No')
+    Cek_billyet_no = fields.Char(string='Nomor Cek/Bilyet',track_visibility='onchange')
+    Cek_billyet_tanggal = fields.Char(string='Tanggal Cek/Bilyet',track_visibility='onchange')
     
-    bayar_to = fields.Char(string='Nama')
-    bayar_nik = fields.Char(string='NIK')
-    bayar_unit_kerja = fields.Char(string='Unit Kerja')
-    kode_anggaran = fields.Char(string='Kode Anggaran')
-    sisa_uang_muka_lama = fields.Float(string='Sisa Uang Muka Lama')
-    total_uang = fields.Float(compute='_get_total',string='Jumlah Uang')
-    total_uang_terbilang = fields.Char(compute='_get_terbilang',string='Terbilang')
-    dilaksanakan_pada_tanggal = fields.Date(string='Dilaksanakan pada tanggal', required=True)
+    bank_ac_name = fields.Char(string='Nama Pemilik Rek',track_visibility='onchange')
+    bank_ac_no = fields.Char(string='A/C No',track_visibility='onchange')
     
-    uraian_rencana_penggunaan_uang_muka_ids =fields.One2many('uraian.rencana.penggunaan.uang.muka', 'voucher_kasbon_id', help='Daftar uraian pembayaran', required=True)
+    bayar_to = fields.Char(string='Nama',required=True,track_visibility='onchange')
+    bayar_nik = fields.Char(string='NIK',track_visibility='onchange')
+    bayar_unit_kerja = fields.Char(string='Unit Kerja',track_visibility='onchange')
+    kode_anggaran = fields.Char(string='Kode Anggaran',track_visibility='onchange')
+    sisa_uang_muka_lama = fields.Float(string='Sisa Uang Muka Lama',track_visibility='onchange')
+    total_uang = fields.Float(compute='_get_total',string='Jumlah Uang',track_visibility='onchange')
+    total_uang_terbilang = fields.Char(compute='_get_terbilang',string='Terbilang',track_visibility='onchange')
+    dilaksanakan_pada_tanggal = fields.Date(string='Dilaksanakan pada tanggal', required=True,track_visibility='onchange')
     
-    attachment_ids = fields.Many2many('ir.attachment',  string="Attachments")
+    uraian_rencana_penggunaan_uang_muka_ids =fields.One2many('uraian.rencana.penggunaan.uang.muka', 'voucher_kasbon_id', help='Daftar uraian pembayaran', required=True,track_visibility='onchange')
+    
+    attachment_ids = fields.Many2many('ir.attachment',  string="Attachments",track_visibility='onchange')
     
     diajukan_oleh = fields.Many2one(comodel_name='res.users', string='Diajukan Oleh')
     diajukan_tanggal = fields.Date(string='Diajukan Tgl')
@@ -91,14 +95,24 @@ class VoucherPermintaanKasbon(models.Model):
     dibayar_oleh = fields.Many2one(comodel_name='res.users', string='Dibayar Oleh')
     dibayar_tanggal = fields.Date(string='Dibayar Tgl')
     
-    keterangan = fields.Text(string='Keterangan')
+    keterangan = fields.Text(string='Keterangan',track_visibility='onchange')
     
-    active = fields.Boolean(string='active',default=True)
+    active = fields.Boolean(string='active',default=True,track_visibility='onchange')
 
     is_owner = fields.Boolean(string="Is Visible Konfirmasi", compute="_get_is_owner_doc", default='_get_is_owner_doc')
     is_visible_konfimasi_button = fields.Boolean(string="Is Visible Konfirmasi", compute="_get_is_visible_konfimasi_button")
     is_visible_verifikasi_button = fields.Boolean(string="Is Visible Verifikasi", compute="_get_is_visible_verifikasi_button")
     is_visible_approval_button = fields.Boolean(string="Is Visible Approval", compute="_get_is_visible_approval_button")
+    is_visible_reject_button = fields.Boolean(string="Is Visible Reject", compute="_get_is_visible_reject_button")
+    
+    def _get_is_visible_reject_button(self):
+        self.is_visible_reject_button = False
+        if self.state == 'submitted' and  self.is_visible_konfimasi_button:
+            self.is_visible_reject_button=True
+        if self.state == 'confirmed' and  self.is_visible_verifikasi_button:
+            self.is_visible_reject_button=True
+        if self.state == 'validated' and  self.is_visible_approval_button:
+            self.is_visible_reject_button=True
     
     def _get_is_owner_doc(self):
         self.is_owner = False

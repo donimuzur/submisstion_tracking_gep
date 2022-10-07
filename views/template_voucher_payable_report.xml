@@ -16,314 +16,351 @@
             <field name="dpi">90</field>
         </record>
         <template id="report_voucher_payable">
-            <div class="header" t-att-style="report_header_style" >
-                <div align="center">
-                    <img t-if="image" t-att-src="image_data_uri(image)" style="max-width:100%"/>
-                </div> 
-                 <div class="col-12 mb4">
-                    <div style="border-bottom: 1px solid #33C7FF;"/>
+            <t t-foreach="data.bpk_details_ids" t-as="bpk_details">
+                <div class="header" t-att-style="report_header_style" >
+                    <div align="center">
+                        <img t-if="image" t-att-src="image_data_uri(image)" style="max-width:100%"/>
+                    </div> 
+                    <div class="col-12 mb4">
+                        <div style="border-bottom: 1px solid #33C7FF;"/>
+                    </div>
+                    <div class="col-12 mb4">
+                        <div style="border-bottom: 1px solid black;"/>
+                    </div>
                 </div>
-                <div class="col-12 mb4">
-                    <div style="border-bottom: 1px solid black;"/>
-                </div>
-            </div>
-            <t t-call="web.html_container">
-                <t t-call="web.layout">
-                    <div class="page">
-                        <div class="article">
-                            <div id="cara_pembayaran" class="row mt8 mb8">
-                                <div class="col-2 mt8" style="height:90px;background-color:#33C7FF;border-radius:1px;border: 1px solid black">  
-                                    <div class="col-12" style="vertical-align:middle;text-align:center;padding:30px 0">
-                                        <strong style="font-size:12px;vertical-align: middle;text-align:center;">CARA PEMBAYARAN</strong>
-                                    </div>    
+                <t t-call="web.html_container">
+                    <t t-call="web.layout">
+                        <div class="page">
+                            <div class="article">
+                                <div id="cara_pembayaran" class="row mt8 mb8">
+                                    <div class="col-2 mt8" style="height:90px;background-color:#33C7FF;border-radius:1px;border: 1px solid black">  
+                                        <div class="col-12" style="vertical-align:middle;text-align:center;padding:30px 0">
+                                            <strong style="font-size:12px;vertical-align: middle;text-align:center;">CARA PEMBAYARAN</strong>
+                                        </div>    
+                                    </div>
+                                    <div class="col-3"  style="margin:0; padding:0" >
+                                        <div class="col-12" >
+                                            <input type="checkbox" id="cara_pembayaran_Cek"  t-att-checked="'checked' if data.cara_pembayaran == 1 else None" />
+                                            <strong>Cek / Giro / TT</strong>
+                                        </div>    
+                                        <div class="col-12" >
+                                            <input type="checkbox" id="cara_pembayaran_transfer"  t-att-checked="'checked' if data.cara_pembayaran == 2 else None"/>
+                                            <strong>Transfer</strong>
+                                        </div>    
+                                        <div class="col-12" >
+                                            <input type="checkbox" id="cara_pembayaran_tunai"  t-att-checked="'checked' if data.cara_pembayaran == 3 else None"/>
+                                            <strong>Tunai</strong>
+                                        </div>    
+                                        <div class="col-12" >
+                                            <input type="checkbox" id="cara_pembayaran_scr_bertahap"  t-att-checked="'checked' if data.cara_pembayaran == 4 else None"/>
+                                            <strong>Dibayar bertahap</strong>
+                                        </div>    
+                                    </div>
+                                    <div class="col-4" style="margin:0; padding:0">
+                                        <table style="width: 100%">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-left"  style="width: 30%">
+                                                        <strong>BANK</strong>
+                                                    </td>
+                                                    <td class="text-left"  style="width: 70%">
+                                                        : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bank_nama"/> 
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <t t-if="data.cara_pembayaran == 1">
+                                                        <td class="text-left"  style="width: 30%">
+                                                            <strong>No. Bilyet  </strong>
+                                                        </td>
+                                                        <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                            :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.Cek_billyet_no"/> 
+                                                        </td>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <td class="text-left"  style="width: 30%">
+                                                            <strong>A/C No  </strong>
+                                                        </td>
+                                                        <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                            :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bank_ac_no"/> 
+                                                        </td>
+                                                    </t>
+                                                </tr>
+                                                <tr>
+                                                    <t t-if="data.cara_pembayaran == 1">
+                                                        <td class="text-left"  style="width: 30%">
+                                                            <strong>Tgl. Bilyet</strong>
+                                                        </td>
+                                                        <td class="text-left"  style="width: 70%">
+                                                            : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.Cek_billyet_tanggal"/> 
+                                                        </td>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <td class="text-left"  style="width: 30%">
+                                                            <strong>Atas Nama  </strong>
+                                                        </td>
+                                                        <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                            :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bank_ac_name"/> 
+                                                        </td>
+                                                    </t>
+                                                </tr>
+                                            </tbody>
+                                        </table> 
+                                    </div>
+                                    <div class="col-3  mb-8" >
+                                        <table style="width: 100%">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-left"  style="width: 30%">
+                                                        <strong>Nomor</strong>
+                                                    </td>
+                                                    <td class="text-left"  style="width: 70%">
+                                                        : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.name"/> 
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left"  style="width: 30%">
+                                                        <strong>Tanggal  </strong>
+                                                    </td>
+                                                    <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                        :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.tanggal"/> 
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>      
+                                    </div>
                                 </div>
-                                <div class="col-3"  style="margin:0; padding:0" >
-                                    <div class="col-12" >
-                                        <input type="checkbox" id="cara_pembayaran_cheque"  t-att-checked="'checked' if data.cara_pembayaran == 1 else None" />
-                                        <strong>Cheque / Giro / TT</strong>
-                                    </div>    
-                                    <div class="col-12" >
-                                        <input type="checkbox" id="cara_pembayaran_transfer"  t-att-checked="'checked' if data.cara_pembayaran == 2 else None"/>
-                                        <strong>Transfer</strong>
-                                    </div>    
-                                    <div class="col-12" >
-                                        <input type="checkbox" id="cara_pembayaran_tunai"  t-att-checked="'checked' if data.cara_pembayaran == 3 else None"/>
-                                        <strong>Tunai</strong>
-                                    </div>    
-                                    <div class="col-12" >
-                                        <input type="checkbox" id="cara_pembayaran_scr_bertahap"  t-att-checked="'checked' if data.cara_pembayaran == 4 else None"/>
-                                        <strong>Dibayar bertahap</strong>
-                                    </div>    
+                                <div id="voucher_payable_details" class="row" style="margin-top:100px">
+                                    <div class="col-8  mb-8" >
+                                        <table style="width: 100%">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-left"  style="width: 29%">
+                                                        <strong>Dibayarkan Kepada  </strong>
+                                                    </td>
+                                                    <td style="width: 1%">:</td>
+                                                    <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                        <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bayar_to"/> 
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left"  style="width: 29%">
+                                                        <strong>Alamat  </strong>
+                                                    </td>
+                                                    <td style="width: 1%">:</td>
+                                                    <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                        <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bayar_alamat"/> 
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left"  style="width: 29%">
+                                                        <strong>Kode Anggaran  </strong>
+                                                    </td>
+                                                    <td style="width: 1%">:</td>
+                                                    <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                        <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.kode_anggaran"/> 
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left"  style="width: 29%">
+                                                        <strong>Jumlah Uang  </strong>
+                                                    </td>
+                                                    <td style="width: 1%">:</td>
+                                                    <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                        <![CDATA[&nbsp;&nbsp;]]><strong><span t-esc="data.total_uang"  t-options='{"widget": "monetary", "display_currency": res_company.currency_id}'/></strong> 
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-left"  style="width: 29%">
+                                                        <strong>Terbilang  </strong>
+                                                    </td>
+                                                    <td style="width: 1%">:</td>
+                                                    <td class="text-left"  style="width: 70%;padding-left=2px">
+                                                        <![CDATA[&nbsp;&nbsp;]]>  <span t-esc="data.total_uang_terbilang"/> 
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>      
+                                    </div>
+                                    <div class="col-4  mb-8" >
+                                        <table style="width: 100%">
+                                            <tbody>
+                                                <tr style="border:1px solid black">
+                                                    <td class="text-center"  style="border:1px solid black;width: 30%;background-color: #33C7FF;">
+                                                        <strong>BPK. No.  </strong>
+                                                    </td>
+                                                    <td class="text-left"  style="border:1px solid black;width: 70%;padding-left=2px">
+                                                        <![CDATA[&nbsp;&nbsp;]]><span t-esc="bpk_details.bpk_no"/> 
+                                                    </td>
+                                                </tr>
+                                                <tr style="border:1px solid black">
+                                                    <td class="text-center"  style="border:1px solid black;width: 30%;background-color: #33C7FF;">
+                                                        <strong>Tanggal  </strong>
+                                                    </td>
+                                                    <td class="text-left"  style="border:1px solid black;width: 70%;padding-left=2px">
+                                                        <![CDATA[&nbsp;&nbsp;]]><span t-esc="bpk_details.bpk_tanggal"/> 
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>      
+                                    </div>
                                 </div>
-                                <div class="col-4" style="margin:0; padding:0">
-                                    <table style="width: 100%">
-                                        <tbody>
-                                            <tr>
-                                                <td class="text-left"  style="width: 30%">
-                                                    <strong>BANK</strong>
-                                                </td>
-                                                <td class="text-left"  style="width: 70%">
-                                                    : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bank_nama"/> 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 30%">
-                                                    <strong>A/C No  </strong>
-                                                </td>
-                                                <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bank_ac_no"/> 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 30%">
-                                                    <strong>Atas Nama</strong>
-                                                </td>
-                                                <td class="text-left"  style="width: 70%">
-                                                    : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bank_ac_name"/> 
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table> 
-                                </div>
-                                <div class="col-3  mb-8" >
-                                    <table style="width: 100%">
-                                        <tbody>
-                                            <tr>
-                                                <td class="text-left"  style="width: 30%">
-                                                    <strong>Nomor</strong>
-                                                </td>
-                                                <td class="text-left"  style="width: 70%">
-                                                    : <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.name"/> 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 30%">
-                                                    <strong>Tanggal  </strong>
-                                                </td>
-                                                <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    :  <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.tanggal"/> 
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>      
-                                </div>
-                            </div>
-                            <div id="voucher_payable_details" class="row" style="margin-top:100px">
-                                <div class="col-8  mb-8" >
-                                    <table style="width: 100%">
-                                        <tbody>
-                                            <tr>
-                                                <td class="text-left"  style="width: 29%">
-                                                    <strong>Dibayarkan Kepada  </strong>
-                                                </td>
-                                                <td style="width: 1%">:</td>
-                                                <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bayar_to"/> 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 29%">
-                                                    <strong>Alamat  </strong>
-                                                </td>
-                                                <td style="width: 1%">:</td>
-                                                <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bayar_alamat"/> 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 29%">
-                                                    <strong>Kode Anggaran  </strong>
-                                                </td>
-                                                <td style="width: 1%">:</td>
-                                                <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.kode_anggaran"/> 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 29%">
-                                                    <strong>Jumlah Uang  </strong>
-                                                </td>
-                                                <td style="width: 1%">:</td>
-                                                <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><strong><span t-esc="data.total_uang"  t-options='{"widget": "monetary", "display_currency": res_company.currency_id}'/></strong> 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-left"  style="width: 29%">
-                                                    <strong>Terbilang  </strong>
-                                                </td>
-                                                <td style="width: 1%">:</td>
-                                                <td class="text-left"  style="width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]>  <span t-esc="data.total_uang_terbilang"/> 
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>      
-                                </div>
-                                <div class="col-4  mb-8" >
-                                    <table style="width: 100%">
-                                        <tbody>
-                                            <tr style="border:1px solid black">
-                                                <td class="text-center"  style="border:1px solid black;width: 30%;background-color: #33C7FF;">
-                                                    <strong>BPK. No.  </strong>
-                                                </td>
-                                                <td class="text-left"  style="border:1px solid black;width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bpk_no"/> 
-                                                </td>
-                                            </tr>
-                                            <tr style="border:1px solid black">
-                                                <td class="text-center"  style="border:1px solid black;width: 30%;background-color: #33C7FF;">
-                                                    <strong>Tanggal  </strong>
-                                                </td>
-                                                <td class="text-left"  style="border:1px solid black;width: 70%;padding-left=2px">
-                                                    <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.bpk_tanggal"/> 
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>      
-                                </div>
-                            </div>
 
-                            <div id="uraian_pembayaran" style="margin-top:50px">
-                                <table style="width: 100%">
-                                    <thead>
-                                        <tr style="height:60">
-                                            <th class="text-center" style="border:1px solid black;width:10%;background-color: #33C7FF;"><span>No</span></th>
-                                            <th class="text-center" style="border:1px solid black;width:70%;background-color: #33C7FF;"><span>URAIAN PEMBAYARAN</span></th>
-                                            <th class="text-center" style="border:1px solid black;width:20%;background-color: #33C7FF;"><span>NOMINAL (Rp.)</span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <t t-set="current_subtotal" t-value="0"/>
-                                        <t t-set="currency_id" t-value="0"/>
-                                        <t t-set="total_index_uraian_rencana_penggunaan_uang_muka" t-value="0"/>
-                                        <t t-foreach="data.uraian_pembayaran_voucher_ids" t-as="uraian">
-                                            <tr >
-                                                
-                                                <t t-set="currency_id" t-value="uraian.currency_id"/>
-                                                <td class="text-center" style="border:1px solid black">
-                                                    <span t-esc="uraian_index+1"/>
-                                                </td>
-                                                <td style="border:1px solid black">
-                                                    <span t-esc="uraian.name"/>
+                                <div id="uraian_pembayaran" style="margin-top:50px">
+                                    <table style="width: 100%">
+                                        <thead>
+                                            <tr style="height:60">
+                                                <th class="text-center" style="border:1px solid black;width:10%;background-color: #33C7FF;"><span>No</span></th>
+                                                <th class="text-center" style="border:1px solid black;width:70%;background-color: #33C7FF;"><span>URAIAN PEMBAYARAN</span></th>
+                                                <th class="text-center" style="border:1px solid black;width:20%;background-color: #33C7FF;"><span>NOMINAL (Rp.)</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="current_subtotal" t-value="0"/>
+                                            <t t-set="currency_id" t-value="0"/>
+                                            <t t-set="total_index_uraian_rencana_penggunaan_uang_muka" t-value="0"/>
+                                            <t t-foreach="data.uraian_pembayaran_voucher_ids" t-as="uraian">
+                                                <tr >
+                                                    
+                                                    <t t-set="currency_id" t-value="uraian.currency_id"/>
+                                                    <td class="text-center" style="border:1px solid black">
+                                                        <span t-esc="uraian_index+1"/>
+                                                    </td>
+                                                    <td style="border:1px solid black">
+                                                        <span t-esc="uraian.name"/>
+                                                    </td>
+                                                    <td class="text-right" style="border:1px solid black" >
+                                                        <span t-esc="uraian.nominal" t-options='{"widget": "monetary", "display_currency": uraian.currency_id}'/>
+                                                    </td>
+                                                </tr>
+                                                <t t-set="current_subtotal" t-value="current_subtotal+uraian.nominal"/>
+                                                <t t-set="total_index_uraian_rencana_penggunaan_uang_muka" t-value="uraian_index+1"/>
+                                            </t>
+                                            <t t-set="qty" t-value="5-total_index_uraian_rencana_penggunaan_uang_muka"/>
+                                            <t t-foreach="range(qty)" t-as="item">
+                                                <tr >
+                                                    <td style="border:1px solid black">
+                                                        <![CDATA[&nbsp;&nbsp;]]>
+                                                    </td>
+                                                    <td style="border:1px solid black" >
+                                                        <![CDATA[&nbsp;&nbsp;]]>
+                                                    </td>
+                                                    <td style="border:1px solid black">
+                                                        <![CDATA[&nbsp;&nbsp;]]>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                            <tr style="background-color:#DADADA;">
+                                                <td colspan='2' class="text-center" style="border:1px solid black">
+                                                    <strong>Total</strong>
                                                 </td>
                                                 <td class="text-right" style="border:1px solid black" >
-                                                    <span t-esc="uraian.nominal" t-options='{"widget": "monetary", "display_currency": uraian.currency_id}'/>
+                                                    <strong><span t-esc="current_subtotal" t-options='{"widget": "monetary", "display_currency": currency_id}'/></strong>
                                                 </td>
                                             </tr>
-                                            <t t-set="current_subtotal" t-value="current_subtotal+uraian.nominal"/>
-                                            <t t-set="total_index_uraian_rencana_penggunaan_uang_muka" t-value="uraian_index+1"/>
-                                        </t>
-                                        <t t-set="qty" t-value="5-total_index_uraian_rencana_penggunaan_uang_muka"/>
-                                        <t t-foreach="range(qty)" t-as="item">
-                                             <tr >
-                                                <td style="border:1px solid black">
-                                                    <![CDATA[&nbsp;&nbsp;]]>
-                                                </td>
-                                                <td style="border:1px solid black" >
-                                                    <![CDATA[&nbsp;&nbsp;]]>
-                                                </td>
-                                                <td style="border:1px solid black">
-                                                    <![CDATA[&nbsp;&nbsp;]]>
-                                                </td>
-                                            </tr>
-                                        </t>
-                                        <tr style="background-color:#DADADA;">
-                                            <td colspan='2' class="text-center" style="border:1px solid black">
-                                                <strong>Total</strong>
-                                            </td>
-                                            <td class="text-right" style="border:1px solid black" >
-                                                <strong><span t-esc="current_subtotal" t-options='{"widget": "monetary", "display_currency": currency_id}'/></strong>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>   
+                                        </tbody>
+                                    </table>   
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </t>
                 </t>
-            </t>
 
-            <div class="footer o_boxed_footer">
-                <table style="width: 100%">
-                    <thead>
-                        <tr style="border:1px solid black;background-color: #33C7FF;">
-                            <th class="text-center" style="border:1px solid black;"><span>Diajukan Oleh</span></th>
-                            <th class="text-center" style="border:1px solid black;"><span>Direkomendasi Oleh</span></th>
-                            <th class="text-center" style="border:1px solid black;"><span>Diverifikasi Oleh</span></th>
-                            <th class="text-center" style="border:1px solid black;"><span>Disetujui Oleh</span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="height:100px">
-                            <td class="text-center" style="border:1px solid black;width:25%;max-width:100%">
-                                <t t-if="data.diajukan_oleh" >
-                                    <img t-att-src="image_data_uri(image_signed)" height="100px" />
-                                </t>
-                                <t t-else="" >
-                                    <![CDATA[&nbsp;&nbsp;]]>
-                                </t>
-                                <div>
-                                    <span t-if="data.diajukan_oleh" t-esc="data.diajukan_oleh.name"/>
-                                </div>
-                            </td>
-                            <td class="text-center" style="border:1px solid black;width:25%;max-width:100%">
-                                <t t-if="data.direkomendasi_oleh" >
-                                    <img t-att-src="image_data_uri(image_signed)" height="100px"/>
-                                </t>
-                                <t t-else="" >
-                                    <![CDATA[&nbsp;&nbsp;]]>
-                                </t>
-                                <div>
-                                    <span t-if="data.direkomendasi_oleh" t-esc="data.direkomendasi_oleh.name"/>
-                                </div>
-                            </td>
-                            <td class="text-center" style="border:1px solid black;width:25%;max-width:100%">
-                                <t t-if="data.diverifikasi_oleh" >
-                                    <img t-att-src="image_data_uri(image_signed)" height="100px"/>
-                                </t>
-                                <t t-else="">
-                                    <![CDATA[&nbsp;&nbsp;]]>
-                                </t>
-                                <div>
-                                    <span t-if="data.diverifikasi_oleh" t-esc="data.diverifikasi_oleh.name"/>
-                                </div>
-                            </td>
-                            <td class="text-center" style="border:1px solid black;width:25%;max-width:100%">
-                                <t t-if="data.disetujui_oleh" >
-                                    <img t-att-src="image_data_uri(image_signed)" height="100px"/>
-                                </t>
-                                <t t-else="" >
-                                    <![CDATA[&nbsp;&nbsp;]]>
-                                </t>
-                                <div>
-                                    <span t-if="data.disetujui_oleh" t-esc="data.disetujui_oleh.name"/>
-                                </div>
-                            </td>   
-                        </tr>
-                        <tr>
-                            <td class="text-left"  style="border:1px solid black;">
-                                <strong>Tgl.  <span t-esc="data.diajukan_tanggal"/></strong>
-                            </td>
-                            <td class="text-left"  style="border:1px solid black;">
-                                <strong>Tgl.  <span t-esc="data.direkomendasi_tanggal"/></strong>
-                            </td>
-                            <td class="text-left"  style="border:1px solid black;">
-                                <strong>Tgl.  <span t-esc="data.diverifikasi_tanggal"/></strong>
-                            </td>
-                            <td class="text-left"  style="border:1px solid black;">
-                                <strong>Tgl.  <span t-esc="data.disetujui_tanggal"/></strong>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table> 
-            </div>
+                <div class="footer o_boxed_footer">
+                    <table style="width: 100%">
+                        <thead>
+                            <tr style="border:1px solid black;background-color: #33C7FF;">
+                                <th class="text-center" style="border:1px solid black;"><span>Diajukan Oleh</span></th>
+                                <th class="text-center" style="border:1px solid black;"><span>Direkomendasi Oleh</span></th>
+                                <th class="text-center" style="border:1px solid black;"><span>Diverifikasi Oleh</span></th>
+                                <th class="text-center" style="border:1px solid black;" colspan='2'><span>Disetujui Oleh</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="height:100px">
+                                <td class="text-center" style="vertical-align:middle;border:1px solid black;width:20%;max-width:100%">
+                                    <t t-if="data.diajukan_oleh" >
+                                        <img t-att-src="image_data_uri(image_signed)" width="100px" />
+                                    </t>
+                                    <t t-else="" >
+                                        <![CDATA[&nbsp;&nbsp;]]>
+                                    </t>
+                                    <div>
+                                        <span t-if="data.diajukan_oleh" t-esc="data.diajukan_oleh.name"/>
+                                    </div>
+                                </td>
+                                <td class="text-center" style="vertical-align:middle;border:1px solid black;width:20%;max-width:100%">
+                                    <t t-if="data.direkomendasi_oleh" >
+                                        <img t-att-src="image_data_uri(image_signed)" width="100px"/>
+                                    </t>
+                                    <t t-else="" >
+                                        <![CDATA[&nbsp;&nbsp;]]>
+                                    </t>
+                                    <div>
+                                        <span t-if="data.direkomendasi_oleh" t-esc="data.direkomendasi_oleh.name"/>
+                                    </div>
+                                </td>
+                                <td class="text-center" style="vertical-align:middle;border:1px solid black;width:20%;max-width:100%">
+                                    <t t-if="data.diverifikasi_oleh" >
+                                        <img t-att-src="image_data_uri(image_signed)" width="100px"/>
+                                    </t>
+                                    <t t-else="">
+                                        <![CDATA[&nbsp;&nbsp;]]>
+                                    </t>
+                                    <div>
+                                        <span t-if="data.diverifikasi_oleh" t-esc="data.diverifikasi_oleh.name"/>
+                                    </div>
+                                </td>
+                                <td class="text-center" style="vertical-align:middle;border:1px solid black;width:20%;max-width:100%">
+                                    <t t-if="data.divalidasi_oleh" >
+                                        <img t-att-src="image_data_uri(image_signed)" width="100px"/>
+                                    </t>
+                                    <t t-else="" >
+                                        <![CDATA[&nbsp;&nbsp;]]>
+                                    </t>
+                                    <div>
+                                        <span t-if="data.divalidasi_oleh" t-esc="data.divalidasi_oleh.name"/>
+                                    </div>
+                                </td>   
+                                <td class="text-center" style="vertical-align:middle;border:1px solid black;width:20%;max-width:100%">
+                                    <t t-if="data.disetujui_oleh" >
+                                        <img t-att-src="image_data_uri(image_signed)" width="100px"/>
+                                    </t>
+                                    <t t-else="" >
+                                        <![CDATA[&nbsp;&nbsp;]]>
+                                    </t>
+                                    <div>
+                                        <span t-if="data.disetujui_oleh" t-esc="data.disetujui_oleh.name"/>
+                                    </div>
+                                </td>  
+                            </tr>
+                            <tr>
+                                <td class="text-center"  style="border:1px solid black;">
+                                    <strong>Tgl.  <span t-esc="data.diajukan_tanggal"/></strong>
+                                </td>
+                                <td class="text-center"  style="border:1px solid black;">
+                                    <strong>Tgl.  <span t-esc="data.direkomendasi_tanggal"/></strong>
+                                </td>
+                                <td class="text-center"  style="border:1px solid black;">
+                                    <strong>Tgl.  <span t-esc="data.diverifikasi_tanggal"/></strong>
+                                </td>
+                                <td class="text-center"  style="border:1px solid black;">
+                                    <strong>Tgl.  <span t-esc="data.divalidasi_tanggal"/></strong>
+                                </td>
+                                <td class="text-center"  style="border:1px solid black;">
+                                    <strong>Tgl.  <span t-esc="data.disetujui_tanggal"/></strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table> 
+                </div>
+            </t>
         </template>
       
         <report id="action_print_report_voucher_payable" 
             model="voucher.payable"
             string="Print Voucher Payable"
             report_type="qweb-pdf"
+            menu="False"
             name="payment_voucher.report_voucher_payable"
             attachment_use="False"
             paperformat="payment_voucher.paperFormat_payment_voucher"

@@ -1,0 +1,138 @@
+
+<odoo>
+    <data>
+        <!-- <record id="model_dokumen_dashboard_view_tree" model="ir.ui.view">
+            <field name="name">dokumen.dashboard.view.tree</field>
+            <field name="model">dokumen.dashboard</field>
+            <field name="arch" type="xml">
+                <tree create="false" edit="false" >
+                    <field name="name"/>
+                    <field name="type_dokumen"/>
+                    <field name="diajukan_oleh"/>
+                    <field name="diajukan_tanggal"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record> -->
+        <!-- delivery.order action window -->
+        <record id="dokumen_dashboard_action" model="ir.actions.act_window">
+            <field name="name">DASHBOARD</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">dokumen.dashboard</field>
+            <field name="view_mode">kanban</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                <!-- Add Text Here -->
+                click create to create new delivery order
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+                Waiting To Verif adalah dokument untuk pengajuan pembayaran 
+                </p>
+            </field>
+        </record>
+        <!--confirmdo Kanban View -->
+        <record model="ir.ui.view" id="dokumen_dashboard_view_kanban">
+            <field name="name">dokumen.dashboard.view.kanban</field>
+            <field name="model">dokumen.dashboard</field>
+            <field name="arch" type="xml">
+                <kanban create="false" class="o_dokumen_dashboard_kanban">
+                    <field name="name"/>
+                    <field name="type_dokumen"/>
+                    <field name="diajukan_oleh"/>
+                    <field name="diajukan_tanggal"/>
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="row" >
+                                    <div class="col-12">
+                                        <div class="text-muted o_force_ltr">
+                                            <strong attrs="{'invisible':[('state','!=','submitted')]}" style="color: white;background: #349aba;padding: 3px;border-radius: 3px;"><field name="state"/></strong>
+                                            <strong attrs="{'invisible':[('state','!=','confirmed')]}"  style="color: white;background: #bab834;padding: 3px;border-radius: 3px;"><field name="state"/></strong>
+                                            <strong attrs="{'invisible':[('state','!=','verified')]}"   style="color: white;background: #b1415d;padding: 3px;border-radius: 3px;"><field name="state"/></strong>    
+                                            <strong attrs="{'invisible':[('state','!=','validated')]}"   style="color: white;background: #b1415d;padding: 3px;border-radius: 3px;"><field name="state"/></strong>    
+                                            <strong attrs="{'invisible':[('state','!=','onprocess')]}"   style="color: white;background: #dca500;padding: 3px;border-radius: 3px;"><field name="state"/></strong>    
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <i class="fa fa-file" role="img"/>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <strong><field name="type_dokumen"/></strong>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <field name="name"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="mt4 mb4"/>
+                                <div class="row">
+                                    <div class="col-6 text-center">
+                                        <strong>Diajukan Oleh:</strong>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <strong>Tanggal</strong>
+                                    </div>
+                                    <div t-if="record.diajukan_oleh.value" class="col-6 text-center">
+                                        <field name="diajukan_oleh"/>
+                                    </div>
+                                    <div t-if="record.diajukan_tanggal.value" class="col-6 text-center o_force_ltr">
+                                        <field name="diajukan_tanggal"/>
+                                    </div>
+                                </div>
+                                <field name="is_visible_konfimasi_button" invisible="True"/>
+                                <field name="is_visible_verifikasi_button" invisible="True"/>
+                                <field name="is_visible_validasi_button" invisible="True"/>
+                                <field name="is_visible_approval_button" invisible="True"/>
+                                <div class="row" style="margin-top: 20px" >
+                                    <div class="col-4">
+                                        <button type="object" class="btn btn-primary" name="button_lihat_doc" >Lihat Doc</button>
+                                    </div>
+                                    <div class="col-4" attrs="{'invisible':['|',('is_visible_konfimasi_button','=',False),('state','!=','submitted')]}">
+                                        <button type="object" class="btn btn-primary" name="button_konfirmasi_doc" >Konfirmasi</button>
+                                    </div>
+                                    <div class="col-4" attrs="{'invisible':['|',('is_visible_verifikasi_button','=',False),('state','!=','confirmed')]}">
+                                        <button type="object" class="btn btn-primary" name="button_verifikasi_doc" >Verifikasi</button>
+                                    </div>
+                                    <div class="col-4" attrs="{'invisible':['|',('is_visible_validasi_button','=',False),('state','!=','verified')]}">
+                                        <button type="object" class="btn btn-primary" name="button_validasi_doc" >Validasi</button>
+                                    </div>
+                                    <div class="col-4"  attrs="{'invisible':['|',('is_visible_approval_button','=',False),('state','!=','validated')]}">
+                                        <button type="object" class="btn btn-primary" name="button_setujui_doc" >Setujui</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <menuitem id="submission_menu_Dashboard" name="Dashboard" parent="submission_gep_menu_root" action="dokumen_dashboard_action"  sequence="9"/>
+        
+        <record id="submission_menu_Dashboard" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_user'))
+                    ]"/>
+        </record>
+        <record id="submission_menu_Dashboard" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_verificator'))
+                    ]"/>
+        </record>
+        <record id="submission_menu_Dashboard" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_validator'))
+                    ]"/>
+        </record>
+        <record id="submission_menu_Dashboard" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_approval'))
+                    ]"/>
+        </record>
+
+    </data>
+</odoo>

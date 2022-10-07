@@ -1,23 +1,22 @@
 <odoo>
     <data>
-        <record id="model_voucher_permintaan_kasbon_view_tree" model="ir.ui.view">
-            <field name="name">voucher.permintaan.kasbon.view.tree</field>
-            <field name="model">voucher.permintaan.kasbon</field>
+        <record id="model_voucher_pertanggungjawaban_kasbon_view_tree" model="ir.ui.view">
+            <field name="name">voucher.pertanggungjawaban.kasbon.view.tree</field>
+            <field name="model">voucher.pertanggungjawaban.kasbon</field>
             <field name="arch" type="xml">
                 <tree delete='0' default_order="write_date desc" decoration-warning="state=='onprocess'"  decoration-info="state == 'draft'" decoration-success="state=='finished'" decoration-danger="state=='cancelled'">
                     <!-- Add your fields here -->
                     <field name="name"/>
                     <field name="diajukan_oleh"/>
-                    <field name="dilaksanakan_pada_tanggal"/>
                     <field name="state"/>
                 </tree>
             </field>
         </record>
-        <record id="voucher_permintaan_kasbon_view_form" model="ir.ui.view">
-            <field name="name">voucher.permintaan.kasbon.view.form</field>
-            <field name="model">voucher.permintaan.kasbon</field>
+        <record id="voucher_pertanggungjawaban_kasbon_view_form" model="ir.ui.view">
+            <field name="name">voucher.pertanggungjawaban.kasbon.view.form</field>
+            <field name="model">voucher.pertanggungjawaban.kasbon</field>
             <field name="arch" type="xml">
-                <form string="Input Voucher Permintaan Kasbon" duplicate="false" delete='false'>
+                <form string="Input Voucher pertanggungjawaban Kasbon" duplicate="false" delete='false'>
                     <header>
                         <field name="is_owner" invisible="True"/>
                         <field name="is_visible_konfimasi_button" invisible="True"/>
@@ -47,8 +46,8 @@
                                 <field name="diterima_tanggal"  attrs="{'invisible':[('state','not in',['onprocess','finished'])], 'required':[('state','=','onprocess')], 'readonly':[('is_visible_verifikasi_button','=',False)]}" nolabel='1'/>
                             </group>
                         </group>
-                        <group>
-                            <group>
+                        <group col="2">
+                            <group >
                                 <field name="cara_pembayaran" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"  required="1"/>
                                 
                                 <field name="bank_nama" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','in',[1,2])], 'invisible':[('cara_pembayaran','not in',[1,2])]}"/>
@@ -59,26 +58,32 @@
                                 <field name="bank_ac_name" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','=',2)], 'invisible':[('cara_pembayaran','!=',2)]}"/>
                                 <field name="bank_ac_no" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','=',2)], 'invisible':[('cara_pembayaran','!=',2)]}"/>
                             </group>
+                            <group name="voucher_permintaan_kasbon">
+                                <field name="voucher_permintaan_kasbon_id" domain="['&amp;',('create_uid','=',uid),('state','=','finished') ]" options="{'no_create': True, 'no_create_edit':True}" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                        </group>
+                        <group>
                             <group>
                                 <field name="bayar_to" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="bayar_nik" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="kode_anggaran" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
-                                <field name="dilaksanakan_pada_tanggal" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                             </group>
                         </group>
                         <notebook>
-                            <page string="Uraian Rencana Penggunaan Uang Muka">
-                                <field name="uraian_rencana_penggunaan_uang_muka_ids" required='1' attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}" widget="one2many_list" context="{'uraian_rencana_penggunaan_uang_muka_ids': uraian_rencana_penggunaan_uang_muka_ids}">
-                                    <tree editable="bottom" string="Uraian Rencana Penggunaan Uang Muka">
+                            <page string="Uraian Penggunaan Uang Muka">
+                                <field name="uraian_penggunaan_uang_muka_ids" required='1' attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False),('voucher_permintaan_kasbon_id','=',False)]}" widget="one2many_list" context="{'uraian_penggunaan_uang_muka_ids': uraian_penggunaan_uang_muka_ids}">
+                                    <tree editable="bottom" string="Uraian realisasi Penggunaan Uang Muka" create="false" >
                                         <field name="currency_id" invisible="1"/>
-                                        <field name="name" />
-                                        <field name="nominal" sum="Total"/>
+                                        <field name="name" readonly="1"/>
+                                        <field name="nominal" sum="Total" readonly="1"/>
+                                        <field name="nominal_realisasi" sum="Total"/>
                                     </tree>
                                     <form>
                                         <group>
                                             <field name="currency_id" invisible="1"/>
-                                            <field name="name" />
-                                            <field name="nominal" sum="Total"/>
+                                            <field name="name" readonly="1"/>
+                                            <field name="nominal" sum="Total" readonly="1"/>
+                                            <field name="nominal_realisasi" sum="Total"/>
                                         </group>
                                     </form>
                                 </field>
@@ -117,13 +122,6 @@
                                 <field name="disetujui_tanggal" readonly='1' nolabel="1"/>
                             </group>
                         </group>
-                        <group col="2" >
-                            <group>
-                                <field name="dibayar_oleh" readonly='1'/>
-                                <label string="Tgl" for="dibayar_tanggal"/>
-                                <field name="dibayar_tanggal" readonly='1' nolabel="1"/>
-                            </group>
-                        </group>
                     </sheet>
                     <div class="oe_chatter">
                       <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
@@ -134,10 +132,10 @@
         </record>
         
     <!-- delivery.order action window -->
-        <record id="voucher_permintaan_kasbon_action" model="ir.actions.act_window">
-            <field name="name">Voucher Permintaan Kasbon</field>
+        <record id="voucher_pertanggungjawaban_kasbon_action" model="ir.actions.act_window">
+            <field name="name">Voucher pertanggungjawaban Kasbon</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">voucher.permintaan.kasbon</field>
+            <field name="res_model">voucher.pertanggungjawaban.kasbon</field>
             <field name="view_mode">tree,form</field>
             <field name="view_type">form</field>
             <field name="help" type="html">
@@ -146,26 +144,26 @@
                 click create to create new delivery order
                 </p><p>
                 <!-- More details about what a user can do with this object will be OK -->
-                Voucher Permintaan Kasbon adalah dokument untuk pengajuan pembayaran 
+                Voucher pertanggungjawaban Kasbon adalah dokument untuk pengajuan pembayaran 
                 </p>
             </field>
         </record>
         
-        <menuitem id="voucher_permintaan_kasbon_menu_act" name="Voucher Permintaan Kasbon" parent="submission_menu_categ" action="voucher_permintaan_kasbon_action" sequence="11"/>    
+        <menuitem id="voucher_pertanggungjawaban_kasbon_menu_act" name="Voucher pertanggungjawaban Kasbon" parent="submission_menu_categ" action="voucher_pertanggungjawaban_kasbon_action" sequence="12"/>    
         
-        <record id="voucher_permintaan_kasbon_menu_act" model="ir.ui.menu">
+        <record id="voucher_pertanggungjawaban_kasbon_menu_act" model="ir.ui.menu">
             <field name="groups_id" eval="[
                         (4,ref('submission_tracking_gep_group_user'))
                     ]"/>
         </record>
         
-        <record id="voucher_permintaan_kasbon_menu_act" model="ir.ui.menu">
+        <record id="voucher_pertanggungjawaban_kasbon_menu_act" model="ir.ui.menu">
             <field name="groups_id" eval="[
                         (4,ref('submission_tracking_gep_group_verificator'))
                     ]"/>
         </record>
         
-        <record id="voucher_permintaan_kasbon_menu_act" model="ir.ui.menu">
+        <record id="voucher_pertanggungjawaban_kasbon_menu_act" model="ir.ui.menu">
             <field name="groups_id" eval="[
                         (4,ref('submission_tracking_gep_group_approval'))
                     ]"/>

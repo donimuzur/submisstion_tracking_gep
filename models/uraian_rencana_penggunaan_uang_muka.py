@@ -12,7 +12,8 @@ class UraianRencanaPenggunaanUangMuka(models.Model):
     _description = 'Detail uraian rencana penggunaan uang muka'
     
     name = fields.Char(string='Uraian Penggunaan Uang Muka', required=True)
-    nominal = fields.Monetary(string="Nominal",default=0.0,required=True)
+    nominal = fields.Monetary(string="Rencana",default=0.0,required=True)
+    nominal_realisasi = fields.Monetary(string="Realisasi",default=0.0,required=True)
     company_id = fields.Many2one('res.company', store=True, copy=False,
                                 string="Company",
                                 default=lambda self: self.env.user.company_id.id)
