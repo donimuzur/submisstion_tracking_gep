@@ -157,10 +157,12 @@ class VoucherPayable(models.Model):
         'active':False,
       })
       return self
+    
     def set_finish(self):
       return self.write({
           'state': 'finished',
         })
+      
     def set_draft(self):
       return self.write({
           'active':True,

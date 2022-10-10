@@ -22,20 +22,9 @@ class VoucherPertanggungjawabanKasbon(models.Model):
       res = super(VoucherPertanggungjawabanKasbon,self).create(values)
       if not res.uraian_penggunaan_uang_muka_ids:
         raise ValidationError(_('Uraian tidak boleh kosong'))
-      
       res.name=self.env['ir.sequence'].next_by_code('voucher_pertanggungjawaban_kasbon_sequence')
       return res
-    
-    @api.multi
-    def write(self, values):
-      if self.state == 'onprocess' and values['diterima_oleh']:
-          values["state"] = "finished"
-          values["dibayar_oleh"] = self.env.uid
-          values["dibayar_tanggal"] = fields.Date.today()
-          values["diterima_tanggal"] = fields.Date.today()
-      res = super(VoucherPertanggungjawabanKasbon,self).write(values)
-      return res
-    
+        
     name = fields.Char(string='Nomor PJUM')
     tanggal = fields.Date(string='Tanggal',default=fields.Date.today())
     
@@ -60,10 +49,14 @@ class VoucherPertanggungjawabanKasbon(models.Model):
     kode_anggaran = fields.Char(string='Kode Anggaran',track_visibility='onchange')
     sisa_uang_muka_lama = fields.Float(string='Kekurangan/Sisa uang Muka',track_visibility='onchange')
     total_uang = fields.Float(compute='_get_total',string='Jumlah Uang',track_visibility='onchange')
+    total_uang_diterima = fields.Float(compute='_get_total_diterima',string='Jumlah Uang yang diterima',track_visibility='onchange')
+    kekurangan_sisa_uang_muka = fields.Float(compute='_get_sisa_kekurangan_uang_muka',string='kekurangan / Sisa Uang Muka ',track_visibility='onchange')
     total_uang_terbilang = fields.Char(compute='_get_terbilang',string='Terbilang',track_visibility='onchange')
     
     uraian_penggunaan_uang_muka_ids =fields.One2many('uraian.rencana.penggunaan.uang.muka', 'voucher_kasbon_id', help='Daftar uraian pembayaran', required=True,track_visibility='onchange')
     voucher_permintaan_kasbon_id = fields.Many2one(comodel_name='voucher.permintaan.kasbon', string='Voucher Permintaan Kasbon', required=True)
+    
+    bpk_details_ids = fields.One2many('bpk.details.voucher.pertanggungjawaban.kasbon','voucher_pertanggungjawaban_kasbon_id', help='Daftar BPK',track_visibility='onchange')
     
     attachment_ids = fields.Many2many('ir.attachment',  string="Attachments",track_visibility='onchange')
     
@@ -76,17 +69,14 @@ class VoucherPertanggungjawabanKasbon(models.Model):
     diverifikasi_oleh= fields.Many2one(comodel_name='res.users', string='Diverifikasi Oleh')
     diverifikasi_tanggal=fields.Date(string='Diverifikasi Tgl')
         
+    divalidasi_oleh= fields.Many2one(comodel_name='res.users', string='Divalidasi Oleh')
+    divalidasi_tanggal=fields.Date(string='Divalidasi Tgl')
+    
     disetujui_oleh= fields.Many2one(comodel_name='res.users', string='Disetujui Oleh')
     disetujui_tanggal=fields.Date(string='Disetujui Tgl')
     
     dibukukan_oleh = fields.Many2one(comodel_name='res.users', string='Dibukukan Oleh')
     dibukukan_tanggal = fields.Date(string='Dibukukan Tgl')
-    
-    diterima_oleh = fields.Char( string='Diterima Oleh')
-    diterima_tanggal = fields.Date(string='Diterima Tgl')
-    
-    dibayar_oleh = fields.Many2one(comodel_name='res.users', string='Dibayar Oleh')
-    dibayar_tanggal = fields.Date(string='Dibayar Tgl')
     
     keterangan = fields.Text(string='Keterangan',track_visibility='onchange')
     
@@ -94,6 +84,7 @@ class VoucherPertanggungjawabanKasbon(models.Model):
     is_owner = fields.Boolean(string="Is Visible Konfirmasi", compute="_get_is_owner_doc", default='_get_is_owner_doc')
     is_visible_konfimasi_button = fields.Boolean(string="Is Visible Konfirmasi", compute="_get_is_visible_konfimasi_button")
     is_visible_verifikasi_button = fields.Boolean(string="Is Visible Verifikasi", compute="_get_is_visible_verifikasi_button")
+    is_visible_validasi_button = fields.Boolean(string="Is Visible Validasi", compute="_get_is_visible_validasi_button")
     is_visible_approval_button = fields.Boolean(string="Is Visible Approval", compute="_get_is_visible_approval_button")
     is_visible_reject_button = fields.Boolean(string="Is Visible Reject", compute="_get_is_visible_reject_button")
     
@@ -103,8 +94,10 @@ class VoucherPertanggungjawabanKasbon(models.Model):
             self.is_visible_reject_button=True
         if self.state == 'confirmed' and  self.is_visible_verifikasi_button:
             self.is_visible_reject_button=True
+        if self.state == 'verified' and  self.is_visible_validasi_button:
+            self.is_visible_validasi_button=True
         if self.state == 'validated' and  self.is_visible_approval_button:
-            self.is_visible_reject_button=True
+            self.is_visible_reject_button=True  
     
     @api.onchange('voucher_permintaan_kasbon_id')
     def _compute_get_uraian_rencana(self):
@@ -128,6 +121,11 @@ class VoucherPertanggungjawabanKasbon(models.Model):
         if  self.env.user.has_group('payment_voucher.submission_tracking_gep_group_verificator') :
             self.is_visible_verifikasi_button = True
     
+    def _get_is_visible_validasi_button(self):
+        self.is_visible_validasi_button = False
+        if  self.env.user.has_group('payment_voucher.submission_tracking_gep_group_validator') :
+            self.is_visible_validasi_button = True
+          
     def _get_is_visible_approval_button(self):
         self.is_visible_approval_button = False
         if  self.env.user.has_group('payment_voucher.submission_tracking_gep_group_approval') :
@@ -137,7 +135,16 @@ class VoucherPertanggungjawabanKasbon(models.Model):
     def _get_total(self):
         for rec_uraian in self.uraian_penggunaan_uang_muka_ids:
             self.total_uang = rec_uraian.nominal_realisasi+self.total_uang
-    
+            
+    @api.depends('uraian_penggunaan_uang_muka_ids')
+    def _get_total_diterima(self):
+        for rec_uraian in self.uraian_penggunaan_uang_muka_ids:
+            self.total_uang_diterima = rec_uraian.nominal+self.total_uang_diterima
+                
+    @api.depends('uraian_penggunaan_uang_muka_ids')
+    def _get_sisa_kekurangan_uang_muka(self):
+      self.kekurangan_sisa_uang_muka = self.total_uang_diterima - self.total_uang
+          
     @api.depends('total_uang')
     def _get_terbilang(self):
         t = terbilang.Terbilang()
@@ -162,6 +169,11 @@ class VoucherPertanggungjawabanKasbon(models.Model):
       })
       return self
     
+    def set_finish(self):
+      return self.write({
+          'state': 'finished'
+        })
+          
     def set_draft(self):
       return self.write({
         'active':True,
@@ -174,10 +186,6 @@ class VoucherPertanggungjawabanKasbon(models.Model):
         'disetujui_tanggal':NULL,
         'diverifikasi_oleh':NULL,
         'diverifikasi_tanggal':NULL,
-        'diterima_oleh':NULL,
-        'diterima_tanggal':NULL,
-        'dibayar_oleh':NULL,
-        'dibayar_tanggal':NULL
       })
       
     def konfirmasi(self):
@@ -189,9 +197,16 @@ class VoucherPertanggungjawabanKasbon(models.Model):
       
     def verifikasi(self):
       return self.write({
-          'state': 'validated',
+          'state': 'verified',
           'diverifikasi_oleh':self.env.uid,
           'diverifikasi_tanggal':fields.Date.today()
+      }) 
+      
+    def validasi(self):
+      return self.write({
+          'state': 'validated',
+          'divalidasi_oleh':self.env.uid,
+          'divalidasi_tanggal':fields.Date.today()
       }) 
       
     def setujui(self):
@@ -202,7 +217,7 @@ class VoucherPertanggungjawabanKasbon(models.Model):
       })
       
     def action_print_voucher_pertanggungjawaban_kasbon(self):
-      return self.env.ref('action_print_report_voucher_pertanggungjawaban_kasbon').report_action(self)
+      return self.env.ref('payment_voucher.action_print_report_voucher_pertanggungjawaban_kasbon').report_action(self)
     
 
 class PrintVoucherPertanggungjawabanKasbon(models.AbstractModel):
@@ -231,5 +246,31 @@ class PrintVoucherPertanggungjawabanKasbon(models.AbstractModel):
             'data': data_voucher
         }
     
+
+class BpkDetailsVoucherPertanggungjawabanKasbon(models.Model):
+    _name = 'bpk.details.voucher.pertanggungjawaban.kasbon'
+    _description = 'list BPK Voucher Pertanggungjawaban Kasbon'
     
+    nominal = fields.Monetary(string="Nominal",default=0.0,required=True,track_visibility='onchange')
+    Cek_billyet_no = fields.Char(string='Nomor Cek/Bilyet',track_visibility='onchange')
+    Cek_billyet_tanggal = fields.Date(string='Tanggal Cek/Bilyet',track_visibility='onchange')
+    bpk_no = fields.Char(string='BPK. No.',required=True,track_visibility='onchange')
+    bpk_tanggal = fields.Date(string='BPK Tanggal',required=True,track_visibility='onchange')
+    diterima_oleh = fields.Char( string='Diterima Oleh',track_visibility='onchange')
+    diterima_tanggal = fields.Date(string='Diterima Tgl',track_visibility='onchange')
+    dibayar_oleh = fields.Many2one(comodel_name='res.users',track_visibility='onchange', string='Dibayar Oleh', default=lambda self: self.env.uid)
+    dibayar_tanggal = fields.Date(string='Dibayar Tgl',track_visibility='onchange', default=fields.Date.today())
+    company_id = fields.Many2one('res.company', store=True, copy=False,
+        string="Company",
+        default=lambda self: self.env.user.company_id.id)
+    currency_id = fields.Many2one('res.currency', string="Currency",
+        related='company_id.currency_id',
+        default=lambda
+        self: self.env.user.company_id.currency_id.id)
+    voucher_pertanggungjawaban_kasbon_id = fields.Many2one('voucher.pertanggungjawaban.kasbon',
+        string="Voucher Pertanggungjawaban Kasbon",
+        required=True,
+        store=True,
+        index=True,
+    )
     

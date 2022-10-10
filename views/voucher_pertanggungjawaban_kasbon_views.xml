@@ -21,15 +21,19 @@
                         <field name="is_owner" invisible="True"/>
                         <field name="is_visible_konfimasi_button" invisible="True"/>
                         <field name="is_visible_verifikasi_button" invisible="True"/>
+                        <field name="is_visible_validasi_button" invisible="True"/>
                         <field name="is_visible_approval_button" invisible="True"/>
                         <field name="is_visible_reject_button" invisible="True"/>
                         <button name="submit" class="oe_highlight" string="Submit" type="object" attrs="{'invisible':['|',('state','!=','draft'),('is_owner','!=',True)]}"/>
                         <button name="konfirmasi" class="oe_highlight"   string="Konfirmasi" type="object" attrs="{'invisible':['|',('is_visible_konfimasi_button','!=',True),('state','!=','submitted')]}"/>
                         <button name="verifikasi" class="oe_highlight"  string="Verifikasi" type="object"  attrs="{'invisible':['|',('is_visible_verifikasi_button','!=',True),('state','!=','confirmed')]}"/>
+                        <button name="validasi" class="oe_highlight"  string="Validasi" type="object"  attrs="{'invisible':['|',('is_visible_validasi_button','!=',True),('state','!=','verified')]}"/>
                         <button name="setujui" class="oe_highlight" string="Setujui" type="object" attrs="{'invisible':['|',('is_visible_approval_button','!=',True),('state','!=','validated')]}" />
                         <button name="Reject" class="oe_highlight btn-danger"  string="Reject" type="object" confirm="Apakah anda yakin ??" attrs="{'invisible':[('is_visible_reject_button','!=',True)]}" />
                         <button name="cancel" class="oe_highlight btn-danger" attrs="{'invisible':['|',('is_owner','=',False),('state','in',['draft','cancelled', 'finished'])]}" string="Cancel" type="object"/>
+                        <button name="set_finish" class="oe_highlight" string="Set To Finish" type="object" attrs="{'invisible':['|',('state','!=','onprocess'),('is_visible_verifikasi_button','!=',True)]}" />
                         <button name="set_draft" class="oe_highlight" string="Set To Draft" type="object" attrs="{'invisible':['|',('state','!=','cancelled'),('is_owner','!=',True)]}" />
+                        <button name="action_print_voucher_pertanggungjawaban_kasbon" string="Print" type="object" attrs="{'invisible':['|',('state','!=','finished')]}" icon="fa-print"/>
                         <field name="state" widget="statusbar" />                            
                     </header>
                     <sheet>
@@ -40,17 +44,11 @@
                                     <field name="name" style="color:#7C7BAD" readonly="True" attrs="{'invisible':[('name','=','/')]}"/>
                                 </h1>
                             </group>
-                            <group>
-                                <field name="diterima_oleh"  attrs="{'invisible':[('state','not in',['onprocess','finished'])],'required':[('state','=','onprocess')], 'readonly':[('is_visible_verifikasi_button','=',False)]}"/>
-                                <label for="diterima_tanggal" string="Tanggal"  attrs="{'invisible':[('state','not in',['onprocess','finished'])], 'required':[('state','=','onprocess')], 'readonly':[('is_visible_verifikasi_button','=',False)]}"/>
-                                <field name="diterima_tanggal"  attrs="{'invisible':[('state','not in',['onprocess','finished'])], 'required':[('state','=','onprocess')], 'readonly':[('is_visible_verifikasi_button','=',False)]}" nolabel='1'/>
-                            </group>
                         </group>
                         <group col="2">
-                            <group >
+                            <group>
                                 <field name="cara_pembayaran" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"  required="1"/>
-                                
-                                <field name="bank_nama" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','in',[1,2])], 'invisible':[('cara_pembayaran','not in',[1,2])]}"/>
+                                <field name="bank_nama" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)],'required':[('cara_pembayaran','in',[1,2])], 'invisible':[('cara_pembayaran','not in',[1,2])]}"/>
 
                                 <field name="Cek_billyet_no" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','=',1)], 'invisible':[('cara_pembayaran','!=',1)]}"/>
                                 <field name="Cek_billyet_tanggal" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','=',1)], 'invisible':[('cara_pembayaran','!=',1)]}"/>
@@ -67,11 +65,13 @@
                                 <field name="bayar_to" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="bayar_nik" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="kode_anggaran" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
+                                <field name="total_uang_diterima" readonly="1"/>
+                                <field name="kekurangan_sisa_uang_muka" readonly="1"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Uraian Penggunaan Uang Muka">
-                                <field name="uraian_penggunaan_uang_muka_ids" required='1' attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False),('voucher_permintaan_kasbon_id','=',False)]}" widget="one2many_list" context="{'uraian_penggunaan_uang_muka_ids': uraian_penggunaan_uang_muka_ids}">
+                                <field name="uraian_penggunaan_uang_muka_ids" required='1' attrs="{'readonly':['|',('state','!=','draft'),('is_owner','!=',True)]}" widget="one2many_list" context="{'uraian_penggunaan_uang_muka_ids': uraian_penggunaan_uang_muka_ids}">
                                     <tree editable="bottom" string="Uraian realisasi Penggunaan Uang Muka" create="false" >
                                         <field name="currency_id" invisible="1"/>
                                         <field name="name" readonly="1"/>
@@ -87,7 +87,36 @@
                                         </group>
                                     </form>
                                 </field>
-                               
+                            </page>
+                            <page string="BPK Details" attrs="{'invisible':['&amp;',('is_visible_verifikasi_button','!=',True),('is_visible_validasi_button','!=',True)]}" >
+                                <field name="bpk_details_ids" required='1' attrs="{'readonly':['|',('is_visible_verifikasi_button','!=',True),('state','!=','onprocess')]}" widget="one2many_list" context="{'bpk_details_ids': bpk_details_ids}">
+                                    <tree editable="bottom" string="BPK Details">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="Cek_billyet_no"/>
+                                        <field name="Cek_billyet_tanggal" />
+                                        <field name="bpk_no" />
+                                        <field name="bpk_tanggal" />
+                                        <field name="diterima_oleh" />
+                                        <field name="diterima_tanggal" />
+                                        <field name="dibayar_oleh" />
+                                        <field name="dibayar_tanggal" />
+                                        <field name="nominal" sum="Total"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="Cek_billyet_no"/>
+                                            <field name="Cek_billyet_tanggal" />
+                                            <field name="bpk_no" />
+                                            <field name="bpk_tanggal" />
+                                            <field name="diterima_oleh" />
+                                            <field name="diterima_tanggal" />
+                                            <field name="dibayar_oleh" />
+                                            <field name="dibayar_tanggal" />
+                                            <field name="nominal" sum="Total"/>
+                                        </group>
+                                    </form>
+                                </field>
                             </page>
                         </notebook>
                         <group string="Lampiran" modifiers="{}">
@@ -115,7 +144,13 @@
                                 <label string="Tgl" for="diverifikasi_tanggal"/>
                                 <field name="diverifikasi_tanggal" readonly='1' nolabel="1"/>
                             </group>
-
+                            <group>
+                                <field name="divalidasi_oleh" readonly='1'/>
+                                <label string="Tgl" for="divalidasi_tanggal"/>
+                                <field name="divalidasi_tanggal" readonly='1' nolabel="1"/>
+                            </group>
+                        </group>
+                        <group col="2" >
                             <group>
                                 <field name="disetujui_oleh" readonly='1'/>
                                 <label string="Tgl" for="disetujui_tanggal"/>

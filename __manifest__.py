@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Submission Tracking GEP",
-
     'summary': """System untuk track voucher PT Gunung Emas Putih""",
-
     'description': """Sistem untuk track voucher, reimburstment, dan cash bond PT Gunung Emas Putih
     """,
-
     'author': "PT Gunung Emas Putih",
     'website': "https://www.geptambang.co.id",
-    
+    'license': 'AGPL-3',
+    'development_status': 'Production/Stable',
     'version': '1.0',
     'depends': ['base','product','mail'],
+    'maintainers': ['mgosai'],
     'application': True,
     # always loaded
     'data': [

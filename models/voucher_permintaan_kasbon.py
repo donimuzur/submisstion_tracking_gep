@@ -33,16 +33,6 @@ class VoucherPermintaanKasbon(models.Model):
       res.name=self.env['ir.sequence'].next_by_code('voucher_permintaan_kasbon_sequence')
       return res
     
-    @api.multi
-    def write(self, values):
-      if self.state == 'onprocess' and values['diterima_oleh']:
-          values["state"] = "finished"
-          values["dibayar_oleh"] = self.env.uid
-          values["dibayar_tanggal"] = fields.Date.today()
-          values["diterima_tanggal"] = fields.Date.today()
-      res = super(VoucherPermintaanKasbon,self).write(values)
-      return res
-    
     name = fields.Char(string='Nomor PUM')
     tanggal = fields.Date(string='Tanggal',default=fields.Date.today())
     
@@ -71,6 +61,8 @@ class VoucherPermintaanKasbon(models.Model):
     dilaksanakan_pada_tanggal = fields.Date(string='Dilaksanakan pada tanggal', required=True,track_visibility='onchange')
     
     uraian_rencana_penggunaan_uang_muka_ids =fields.One2many('uraian.rencana.penggunaan.uang.muka', 'voucher_kasbon_id', help='Daftar uraian pembayaran', required=True,track_visibility='onchange')
+      
+    bpk_details_ids = fields.One2many('bpk.details.voucher.permintaan.kasbon','voucher_kasbon_id', help='Daftar BPK',track_visibility='onchange')
     
     attachment_ids = fields.Many2many('ir.attachment',  string="Attachments",track_visibility='onchange')
     
@@ -86,14 +78,11 @@ class VoucherPermintaanKasbon(models.Model):
     diverifikasi_oleh= fields.Many2one(comodel_name='res.users', string='Diverifikasi Oleh')
     diverifikasi_tanggal=fields.Date(string='Diverifikasi Tgl')
     
+    divalidasi_oleh= fields.Many2one(comodel_name='res.users', string='Divalidasi Oleh')
+    divalidasi_tanggal=fields.Date(string='Divalidasi Tgl')
+    
     dibukukan_oleh = fields.Many2one(comodel_name='res.users', string='Dibukukan Oleh')
     dibukukan_tanggal = fields.Date(string='Dibukukan Tgl')
-    
-    diterima_oleh = fields.Char( string='Diterima Oleh')
-    diterima_tanggal = fields.Date(string='Diterima Tgl')
-    
-    dibayar_oleh = fields.Many2one(comodel_name='res.users', string='Dibayar Oleh')
-    dibayar_tanggal = fields.Date(string='Dibayar Tgl')
     
     keterangan = fields.Text(string='Keterangan',track_visibility='onchange')
     
@@ -102,6 +91,7 @@ class VoucherPermintaanKasbon(models.Model):
     is_owner = fields.Boolean(string="Is Visible Konfirmasi", compute="_get_is_owner_doc", default='_get_is_owner_doc')
     is_visible_konfimasi_button = fields.Boolean(string="Is Visible Konfirmasi", compute="_get_is_visible_konfimasi_button")
     is_visible_verifikasi_button = fields.Boolean(string="Is Visible Verifikasi", compute="_get_is_visible_verifikasi_button")
+    is_visible_validasi_button = fields.Boolean(string="Is Visible Validasi", compute="_get_is_visible_validasi_button")
     is_visible_approval_button = fields.Boolean(string="Is Visible Approval", compute="_get_is_visible_approval_button")
     is_visible_reject_button = fields.Boolean(string="Is Visible Reject", compute="_get_is_visible_reject_button")
     
@@ -111,8 +101,10 @@ class VoucherPermintaanKasbon(models.Model):
             self.is_visible_reject_button=True
         if self.state == 'confirmed' and  self.is_visible_verifikasi_button:
             self.is_visible_reject_button=True
+        if self.state == 'verified' and  self.is_visible_validasi_button:
+            self.is_visible_validasi_button=True
         if self.state == 'validated' and  self.is_visible_approval_button:
-            self.is_visible_reject_button=True
+            self.is_visible_reject_button=True  
     
     def _get_is_owner_doc(self):
         self.is_owner = False
@@ -131,6 +123,11 @@ class VoucherPermintaanKasbon(models.Model):
         if  self.env.user.has_group('payment_voucher.submission_tracking_gep_group_verificator') :
             self.is_visible_verifikasi_button = True
     
+    def _get_is_visible_validasi_button(self):
+        self.is_visible_validasi_button = False
+        if  self.env.user.has_group('payment_voucher.submission_tracking_gep_group_validator') :
+            self.is_visible_validasi_button = True
+            
     def _get_is_visible_approval_button(self):
         self.is_visible_approval_button = False
         if  self.env.user.has_group('payment_voucher.submission_tracking_gep_group_approval') :
@@ -165,6 +162,11 @@ class VoucherPermintaanKasbon(models.Model):
       })
       return self
     
+    def set_finish(self):
+      return self.write({
+          'state': 'finished'
+        })
+          
     def set_draft(self):
       return self.write({
         'active':True,
@@ -177,10 +179,8 @@ class VoucherPermintaanKasbon(models.Model):
         'disetujui_tanggal':NULL,
         'diverifikasi_oleh':NULL,
         'diverifikasi_tanggal':NULL,
-        'diterima_oleh':NULL,
-        'diterima_tanggal':NULL,
-        'dibayar_oleh':NULL,
-        'dibayar_tanggal':NULL
+        'divalidasi_oleh':NULL,
+        'divalidasi_tanggal':NULL,
       })
       
     def konfirmasi(self):
@@ -192,9 +192,16 @@ class VoucherPermintaanKasbon(models.Model):
       
     def verifikasi(self):
       return self.write({
-          'state': 'validated',
+          'state': 'verified',
           'diverifikasi_oleh':self.env.uid,
           'diverifikasi_tanggal':fields.Date.today()
+      }) 
+       
+    def validasi(self):
+      return self.write({
+          'state': 'validated',
+          'divalidasi_oleh':self.env.uid,
+          'divalidasi_tanggal':fields.Date.today()
       }) 
       
     def setujui(self):
@@ -204,8 +211,9 @@ class VoucherPermintaanKasbon(models.Model):
           'disetujui_tanggal':fields.Date.today()
       })
       
+    @api.multi  
     def action_print_voucher_permintaan_kasbon(self):
-      return self.env.ref('action_print_report_voucher_permintaan_kasbon').report_action(self)
+      return self.env.ref('payment_voucher.action_print_report_voucher_permintaan_kasbon').report_action(self)
     
 
 class PrintVoucherPermintaanKasbon(models.AbstractModel):
@@ -233,3 +241,31 @@ class PrintVoucherPermintaanKasbon(models.AbstractModel):
             'image_signed':image_signed,
             'data': data_voucher
         }
+
+
+class BpkDetailsVoucherKasbon(models.Model):
+    _name = 'bpk.details.voucher.permintaan.kasbon'
+    _description = 'list BPK Voucher Permintaan Kasbon'
+    
+    nominal = fields.Monetary(string="Nominal",default=0.0,required=True,track_visibility='onchange')
+    Cek_billyet_no = fields.Char(string='Nomor Cek/Bilyet',track_visibility='onchange')
+    Cek_billyet_tanggal = fields.Date(string='Tanggal Cek/Bilyet',track_visibility='onchange')
+    bpk_no = fields.Char(string='BPK. No.',required=True,track_visibility='onchange')
+    bpk_tanggal = fields.Date(string='BPK Tanggal',required=True,track_visibility='onchange')
+    diterima_oleh = fields.Char( string='Diterima Oleh',track_visibility='onchange')
+    diterima_tanggal = fields.Date(string='Diterima Tgl',track_visibility='onchange')
+    dibayar_oleh = fields.Many2one(comodel_name='res.users',track_visibility='onchange', string='Dibayar Oleh', default=lambda self: self.env.uid)
+    dibayar_tanggal = fields.Date(string='Dibayar Tgl',track_visibility='onchange', default=fields.Date.today())
+    company_id = fields.Many2one('res.company', store=True, copy=False,
+        string="Company",
+        default=lambda self: self.env.user.company_id.id)
+    currency_id = fields.Many2one('res.currency', string="Currency",
+        related='company_id.currency_id',
+        default=lambda
+        self: self.env.user.company_id.currency_id.id)
+    voucher_kasbon_id = fields.Many2one('voucher.permintaan.kasbon',
+        string="Voucher Permintaan Kasbon",
+        required=True,
+        store=True,
+        index=True,
+    )

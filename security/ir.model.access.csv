@@ -6,5 +6,8 @@ access_uraian_rencana_penggunaan_uang_muka,uraian.rencana.penggunaan.uang.muka,m
 access_voucher_pertanggungjawaban_kasbon,voucher.pertanggungjawaban.kasbon,model_voucher_pertanggungjawaban_kasbon,,1,1,1,1
 access_dokumen_dashboard,dokumen.dashboard,model_dokumen_dashboard,,1,1,1,1
 access_bpk_details_voucher_payable,bpk.details.voucher.payable,model_bpk_details_voucher_payable,,1,1,1,1
+access_bpk_details_voucher_permintaan_kasbon,bpk.details.voucher.permintaan.kasbon,model_bpk_details_voucher_permintaan_kasbon,,1,1,1,1
+access_bpk_details_voucher_pertanggungjawaban_kasbon,bpk.details.voucher.pertanggungjawaban.kasbon,model_bpk_details_voucher_pertanggungjawaban_kasbon,,1,1,1,1
+
 
 
