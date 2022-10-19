@@ -10,7 +10,7 @@
     'development_status': 'Production/Stable',
     'version': '1.0',
     'depends': ['base','product','mail'],
-    'maintainers': ['mgosai'],
+    'maintainers': ['Muhammad Zulfi Rusdani'],
     'application': True,
     # always loaded
     'data': [
