@@ -8,6 +8,8 @@ access_dokumen_dashboard,dokumen.dashboard,model_dokumen_dashboard,,1,1,1,1
 access_bpk_details_voucher_payable,bpk.details.voucher.payable,model_bpk_details_voucher_payable,,1,1,1,1
 access_bpk_details_voucher_permintaan_kasbon,bpk.details.voucher.permintaan.kasbon,model_bpk_details_voucher_permintaan_kasbon,,1,1,1,1
 access_bpk_details_voucher_pertanggungjawaban_kasbon,bpk.details.voucher.pertanggungjawaban.kasbon,model_bpk_details_voucher_pertanggungjawaban_kasbon,,1,1,1,1
+access_master_config_bank_account,master.config.bank.account,model_master_config_bank_account,,1,1,1,1
+
 
 
 

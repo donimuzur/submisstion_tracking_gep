@@ -257,22 +257,6 @@
                                                     :   &amp;nbsp;&amp;nbsp;<strong>3 (tiga) hari kerja setelah kegiatan selesai</strong>
                                                 </td>
                                             </tr>
-                                            <tr style="border:1px solid black">
-                                                <td class="text-left" style="width:50%">
-                                                    <strong>Kode Anggaran</strong>
-                                                </td>
-                                                <td class="text-left" style="width:50%">
-                                                    :   &amp;nbsp;&amp;nbsp;<strong><span t-esc="data.kode_anggaran"/></strong>
-                                                </td>
-                                            </tr>
-                                            <tr style="border:1px solid black">
-                                                <td class="text-left" style="width:50%">
-                                                    <strong>Sisa Uang Muka Lama</strong>
-                                                </td>
-                                                <td class="text-left" style="width:50%">
-                                                    :   &amp;nbsp;&amp;nbsp;<strong><span t-esc="data.sisa_uang_muka_lama"  t-options='{"widget": "monetary", "display_currency": currency_id}'/></strong>
-                                                </td>
-                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>

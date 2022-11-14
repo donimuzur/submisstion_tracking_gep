@@ -54,8 +54,6 @@ class VoucherPermintaanKasbon(models.Model):
     bayar_to = fields.Char(string='Nama',required=True,track_visibility='onchange')
     bayar_nik = fields.Char(string='NIK',track_visibility='onchange')
     bayar_unit_kerja = fields.Char(string='Unit Kerja',track_visibility='onchange')
-    kode_anggaran = fields.Char(string='Kode Anggaran',track_visibility='onchange')
-    sisa_uang_muka_lama = fields.Float(string='Sisa Uang Muka Lama',track_visibility='onchange')
     total_uang = fields.Float(compute='_get_total',string='Jumlah Uang',track_visibility='onchange')
     total_uang_terbilang = fields.Char(compute='_get_terbilang',string='Terbilang',track_visibility='onchange')
     dilaksanakan_pada_tanggal = fields.Date(string='Dilaksanakan pada tanggal', required=True,track_visibility='onchange')
@@ -171,16 +169,16 @@ class VoucherPermintaanKasbon(models.Model):
       return self.write({
         'active':True,
         'state': 'draft',
-        'diajukan_oleh':NULL,
-        'diajukan_tanggal':NULL,
-        'direkomendasi_oleh':NULL,
-        'direkomendasi_tanggal':NULL,
-        'disetujui_oleh':NULL,
-        'disetujui_tanggal':NULL,
-        'diverifikasi_oleh':NULL,
-        'diverifikasi_tanggal':NULL,
-        'divalidasi_oleh':NULL,
-        'divalidasi_tanggal':NULL,
+        'diajukan_oleh':None,
+        'diajukan_tanggal':None,
+        'direkomendasi_oleh':None,
+        'direkomendasi_tanggal':None,
+        'disetujui_oleh':None,
+        'disetujui_tanggal':None,
+        'diverifikasi_oleh':None,
+        'diverifikasi_tanggal':None,
+        'divalidasi_oleh':None,
+        'divalidasi_tanggal':None,
       })
       
     def konfirmasi(self):
@@ -210,6 +208,23 @@ class VoucherPermintaanKasbon(models.Model):
           'disetujui_oleh':self.env.uid,
           'disetujui_tanggal':fields.Date.today()
       })
+      
+    def reject(self):
+      return self.write({
+          'state': 'draft',
+          'diajukan_oleh':None,
+          'diajukan_tanggal':None,
+          'direkomendasi_oleh':None,
+          'direkomendasi_tanggal':None,
+          'disetujui_oleh':None,
+          'disetujui_tanggal':None,
+          'diverifikasi_oleh':None,
+          'diverifikasi_tanggal':None,
+          'divalidasi_oleh':None,
+          'divalidasi_tanggal':None,
+          'keterangan':None
+      }) 
+      
       
     @api.multi  
     def action_print_voucher_permintaan_kasbon(self):

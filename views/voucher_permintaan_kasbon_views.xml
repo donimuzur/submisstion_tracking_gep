@@ -30,7 +30,7 @@
                         <button name="verifikasi" class="oe_highlight"  string="Verifikasi" type="object"  attrs="{'invisible':['|',('is_visible_verifikasi_button','!=',True),('state','!=','confirmed')]}"/>
                         <button name="validasi" class="oe_highlight"  string="Validasi" type="object"  attrs="{'invisible':['|',('is_visible_validasi_button','!=',True),('state','!=','verified')]}"/>
                         <button name="setujui" class="oe_highlight" string="Setujui" type="object" attrs="{'invisible':['|',('is_visible_approval_button','!=',True),('state','!=','validated')]}" />
-                        <button name="Reject" class="oe_highlight btn-danger"  string="Reject" type="object" confirm="Apakah anda yakin ??" attrs="{'invisible':[('is_visible_reject_button','!=',True)]}" />
+                        <button name="reject" class="oe_highlight btn-danger"  string="Reject" type="object" confirm="Apakah anda yakin ??" attrs="{'invisible':[('is_visible_reject_button','!=',True)]}" />
                         <button name="cancel" class="oe_highlight btn-danger" attrs="{'invisible':['|',('is_owner','=',False),('state','in',['draft','cancelled', 'finished'])]}" string="Cancel" type="object"/>
                         <button name="set_finish" class="oe_highlight" string="Set To Finish" type="object" attrs="{'invisible':['|',('state','!=','onprocess'),('is_visible_verifikasi_button','!=',True)]}" />
                         <button name="set_draft" class="oe_highlight" string="Set To Draft" type="object" attrs="{'invisible':['|',('state','!=','cancelled'),('is_owner','!=',True)]}" />
@@ -60,7 +60,6 @@
                             <group>
                                 <field name="bayar_to" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="bayar_nik" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
-                                <field name="kode_anggaran" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="dilaksanakan_pada_tanggal" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                             </group>
                         </group>

@@ -27,7 +27,8 @@
         'views/template_voucher_pertanggungjawaban_kasbon_report.xml',
         'security/voucher_pertanggungjawaban_kasbon_security.xml',  
         'views/dokumen_dashboard_views.xml',         
-        'security/dashboard_security.xml'
+        'security/dashboard_security.xml',
+        'views/config_model_views.xml',
     ],
 }
 

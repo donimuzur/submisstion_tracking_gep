@@ -25,6 +25,11 @@
             <field name="comment">user</field>
             <field name="category_id" ref="module_submission_tracking_gep"/>
         </record>
+        <record id="submission_tracking_gep_group_admin" model="res.groups">
+            <field name="name">Admin</field>
+            <field name="comment">admin</field>
+            <field name="category_id" ref="module_submission_tracking_gep"/>
+        </record>
 
         <record id="submission_gep_menu_root" model="ir.ui.menu">
             <field name="groups_id" eval="[
