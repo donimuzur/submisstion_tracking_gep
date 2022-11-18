@@ -13,3 +13,9 @@ class MasterConfigBankAccount(models.Model):
     bank_ac_name = fields.Char(string='Nama Pemilik Rek',track_visibility='onchange')
     bank_ac_no = fields.Char(string='A/C No',track_visibility='onchange')
     
+    @api.multi
+    def name_get(self):
+        res = []
+        for value in self:
+            res.append([value.id, "%s-%s" % (value.bank_ac_name, value.name)])
+        return res

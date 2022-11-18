@@ -63,6 +63,21 @@
         </record>
         <record id="submission_gep_menu_root" model="ir.ui.menu">
             <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_validator'))
+                    ]"/>
+        </record>
+        <record id="submission_menu_categ" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_validator'))
+                    ]"/>
+        </record>
+        <record id="voucher_payable_menu_act" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                        (4,ref('submission_tracking_gep_group_validator'))
+                    ]"/>
+        </record>
+        <record id="submission_gep_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[
                         (4,ref('submission_tracking_gep_group_approval'))
                     ]"/>
         </record>

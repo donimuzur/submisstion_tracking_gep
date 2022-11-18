@@ -12,7 +12,6 @@
     'depends': ['base','product','mail'],
     'maintainers': ['Muhammad Zulfi Rusdani'],
     'application': True,
-    # always loaded
     'data': [
         'data/add_sequence_data.xml',
         'views/voucher_payable_views.xml',
@@ -29,6 +28,10 @@
         'views/dokumen_dashboard_views.xml',         
         'security/dashboard_security.xml',
         'views/config_model_views.xml',
+        'templates/pdfimage_viewer.xml'
+    ],
+    'qweb': [
+        "static/src/xml/pdfimage_viewer_templates.xml",
     ],
 }
 

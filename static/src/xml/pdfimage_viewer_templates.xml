@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <div t-name="FieldBinaryFileUploader2.files" class="oe_attachments" aria-atomic="true">
+        <t t-if="widget.mode === 'readonly'">
+            <div t-foreach="widget.value.data" t-as="file">
+                <!-- <t t-raw="file.data.name || file.data.filename"/>
+                <a target="_blank" t-att-href="widget.metadata[file.id].url"><span class="btn btn-secondary fa fa-download"></span></a> -->
+                <button type="button"  class="o_external_link btn btn-secondary" style="padding: 0px 4px; color: #7C7BAD;" title="Preview" aria-label="Preview"
+                    t-att-fileid="file.data.id" 
+                    t-att-mimetype="file.data.mimetype" 
+                    t-att-name="file.data.name" 
+                    t-att-display_name="file.data.display_name" 
+                    ><span class="fa fa-file-text"/> <t t-raw="file.data.name || file.data.filename"/></button>
+            </div>
+        </t>
+        <t t-else="1">
+            <div t-foreach="widget.value.data" t-as="file" class="oe_attachment">
+                <t t-if="!file.data.upload">
+                    <div>
+                        <a href="#" class="fa fa-times float-right oe_delete" title="Delete this file" aria-label="Delete this file" t-att-data-id="file.data.id"/>
+                        <t t-raw="file.data.name || file.data.filename"/>
+                    </div>
+                    <a class="o_image" target="_blank" t-att-href="widget.metadata[file.id] ? widget.metadata[file.id].url : false"
+                    t-att-title="file.data.name"
+                    t-att-aria-label="file.data.name"
+                    t-att-data-mimetype="file.data.mimetype"
+                    t-attf-data-src="/web/image/#{file.data.id}/100x80"/>
+                </t>
+            </div>
+            <div t-foreach="widget.uploadingFiles" t-as="file" class="oe_attachment">
+                <div>Uploading...</div>
+                <a t-att-title="file.name" t-att-aria-label="file.name" t-att-name="file.name" class="o_image">
+                    <i class="fa fa-spinner fa-spin fa-5x fa-fw" role="img" aria-label="Loading, please wait..." title="Loading, please wait..."></i>
+                </a>
+                <div><t t-esc="file.name"/></div>
+            </div>
+        </t>
+    </div>
+</templates>

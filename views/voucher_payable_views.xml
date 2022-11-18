@@ -18,12 +18,14 @@
             <field name="arch" type="xml">
                 <form string="Input Voucher Payable" duplicate="false" delete='false'>
                     <header>
+                        <field name="currency_id" invisible="1"/>
                         <field name="is_owner" invisible="True"/>
                         <field name="is_visible_konfimasi_button" invisible="True"/>
                         <field name="is_visible_verifikasi_button" invisible="True"/>
                         <field name="is_visible_validasi_button" invisible="True"/>
                         <field name="is_visible_approval_button" invisible="True"/>
                         <field name="is_visible_reject_button" invisible="True"/>
+                        <field name="is_visible_print_button" invisible="True"/>
                         <button name="submit" class="oe_highlight" string="Submit" type="object" attrs="{'invisible':['|',('state','!=','draft'),('is_owner','!=',True)]}"/>
                         <button name="konfirmasi" class="oe_highlight"   string="Konfirmasi" type="object" attrs="{'invisible':['|',('is_visible_konfimasi_button','!=',True),('state','!=','submitted')]}"/>
                         <button name="verifikasi" class="oe_highlight"  string="Verifikasi" type="object"  attrs="{'invisible':['|',('is_visible_verifikasi_button','!=',True),('state','!=','confirmed')]}"/>
@@ -33,7 +35,7 @@
                         <button name="cancel" class="oe_highlight btn-danger" attrs="{'invisible':['|',('is_owner','=',False),('state','in',['draft','cancelled', 'finished'])]}" string="Cancel" type="object"/>
                         <button name="set_finish" class="oe_highlight" string="Set To Finish" type="object" attrs="{'invisible':['|',('state','!=','onprocess'),('is_visible_verifikasi_button','!=',True)]}" />
                         <button name="set_draft" class="oe_highlight" string="Set To Draft" type="object" attrs="{'invisible':['|',('state','!=','cancelled'),('is_owner','!=',True)]}" />
-                        <button name="action_print_voucher_payable" string="Print" type="object" attrs="{'invisible':['|',('state','!=','finished')]}" icon="fa-print"/>
+                        <button name="action_print_voucher_payable" string="Print" type="object" attrs="{'invisible':[('is_visible_print_button','!=',True)]}" icon="fa-print"/>
                         <field name="state" widget="statusbar" />                            
                     </header>
                     <sheet>
@@ -47,19 +49,11 @@
                         </group>
                         <group>
                             <group>
-                                <field name="cara_pembayaran" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"  required="1"/>
-                                <field name="bank_nama" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)],'required':[('cara_pembayaran','in',[1,2])], 'invisible':[('cara_pembayaran','not in',[1,2])]}"/>
-
-                                <field name="Cek_billyet_no" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','=',1)], 'invisible':[('cara_pembayaran','!=',1)]}"/>
-                                <field name="Cek_billyet_tanggal" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','=',1)], 'invisible':[('cara_pembayaran','!=',1)]}"/>
-
-                                <field name="bank_ac_name" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','=',2)], 'invisible':[('cara_pembayaran','!=',2)]}"/>
-                                <field name="bank_ac_no" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)], 'required':[('cara_pembayaran','=',2)], 'invisible':[('cara_pembayaran','!=',2)]}"/>
-                            </group>
-                            <group>
                                 <field name="bayar_to" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="bayar_no_account_bank" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="bayar_alamat" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
+                                <field name="total_uang" attrs="{'invisible':[('state','=','draft')]}" readonly="1"/>
+                                <field name="total_uang_terbilang" attrs="{'invisible':[('state','=','draft')]}" readonly="1"/>
                             </group>
                         </group>
                         <notebook>
@@ -80,30 +74,23 @@
                                 </field>
                             </page>
                             <page string="BPK Details" attrs="{'invisible':['|',('state', 'not in',['onprocess','finished']),('is_visible_verifikasi_button','!=',True),('is_visible_validasi_button','!=',True)]}" >
-                                <field name="bpk_details_ids" required='1' attrs="{'readonly':['|',('is_visible_verifikasi_button','!=',True),('state','!=','onprocess')]}" widget="one2many_list" context="{'bpk_details_ids': bpk_details_ids}">
-                                    <tree editable="bottom" string="BPK Details">
-                                        <field name="currency_id" invisible="1"/>
-                                        <field name="Cek_billyet_no"/>
-                                        <field name="Cek_billyet_tanggal" />
-                                        <field name="bpk_no" />
-                                        <field name="bpk_tanggal" />
-                                        <field name="nominal" sum="Total"/>
-                                    </tree>
-                                    <form>
-                                        <group>
+                                <group>
+                                    <button name="add_bpk" class="oe_highlight" string="Tambah BPK" type="object"  attrs="{'invisible':['|',('state','!=','onprocess'),('is_visible_verifikasi_button','!=',True)]}" />
+                                </group>
+                                <group>
+                                    <field name="bpk_details_ids" required='1' attrs="{'readonly':['|',('is_visible_verifikasi_button','!=',True),('state','!=','onprocess')]}" widget="one2many_list" context="{'bpk_details_ids': bpk_details_ids}">
+                                        <tree string="BPK Details"  create="false" edit="false" delete="false">
                                             <field name="currency_id" invisible="1"/>
-                                            <field name="Cek_billyet_no"/>
-                                            <field name="Cek_billyet_tanggal" />
                                             <field name="bpk_no" />
                                             <field name="bpk_tanggal" />
                                             <field name="nominal" sum="Total"/>
-                                        </group>
-                                    </form>
-                                </field>
+                                        </tree>
+                                    </field>
+                                </group>
                             </page>
                         </notebook>
                         <group string="Lampiran" modifiers="{}">
-                            <field name="attachment_ids" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}" widget="pdf_viewer" nolabel="1"/>
+                            <field name="attachment_ids" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}" widget="many2many_binary" nolabel="1"/>
                         </group>
                          <group string="Keterangan" modifiers="{}">
                             <field name="keterangan" colspan="4" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}" placeholder="Tambahkan catatan disini..." nolabel="1" height="50"/>
@@ -170,6 +157,33 @@
         <menuitem id="submission_gep_menu_root" name="Submission" sequence="10"/>
         <menuitem id="submission_menu_categ" name="Dokumen" parent="submission_gep_menu_root" sequence="10"/>
         <menuitem id="voucher_payable_menu_act" name="Voucher Payable" parent="submission_menu_categ" action="voucher_payable_action" sequence="10"/>    
+
+        <record id="bpk_details_voucher_payable_view_form" model="ir.ui.view">
+            <field name="name">bpk.details.voucher.payable.view.form</field>
+            <field name="model">bpk.details.voucher.payable</field>
+            <field name="arch" type="xml">
+                <form string="BPK Details">
+                    <sheet>
+                        <group col='2'>
+                            <group>
+                                <field name="currency_id" invisible="1"/>
+                                <label string="No Voucher" for="voucher_id"/>
+                                <field name="voucher_id" readonly='1' required="1" nolabel="1"/>
+                                <field name="bpk_no" required="1"/>
+                                <field name="bpk_tanggal" required="1"/>
+                                <field name="nominal" required="1"/>
+                            </group>
+                            <group>
+                                <field name="cara_pembayaran" required="1"/>
+                                <field name="bank_account_ids" attrs="{'required':[('cara_pembayaran','in',[1,2])], 'invisible':[('cara_pembayaran','not in',[1,2])]}"/>
+                                <field name="Cek_billyet_no" attrs="{'required':[('cara_pembayaran','=',1)], 'invisible':[('cara_pembayaran','!=',1)]}"/>
+                                <field name="Cek_billyet_tanggal" attrs="{'required':[('cara_pembayaran','=',1)], 'invisible':[('cara_pembayaran','!=',1)]}"/>                                
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
 
         <!-- res.users inherit form view -->
         <record id="views_users_form" model="ir.ui.view">

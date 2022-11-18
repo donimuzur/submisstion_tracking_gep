@@ -41,20 +41,11 @@ class VoucherPermintaanKasbon(models.Model):
       track_visibility='onchange'
       )
     
-    cara_pembayaran = fields.Selection(string="Cara Pembayaran", selection=[(1,'Cek / Giro / TT'),(2, 'Transfer'),(3, 'Tunai'),(4, 'Dibayar scr Bertahap')], default=3, required=True,track_visibility='onchange')
-   
-    bank_nama = fields.Char(string='BANK',track_visibility='onchange')
-    
-    Cek_billyet_no = fields.Char(string='Nomor Cek/Bilyet',track_visibility='onchange')
-    Cek_billyet_tanggal = fields.Char(string='Tanggal Cek/Bilyet',track_visibility='onchange')
-    
-    bank_ac_name = fields.Char(string='Nama Pemilik Rek',track_visibility='onchange')
-    bank_ac_no = fields.Char(string='A/C No',track_visibility='onchange')
-    
     bayar_to = fields.Char(string='Nama',required=True,track_visibility='onchange')
+    bayar_no_account_bank = fields.Char(string='No Rekening Bank',track_visibility='onchange')
     bayar_nik = fields.Char(string='NIK',track_visibility='onchange')
     bayar_unit_kerja = fields.Char(string='Unit Kerja',track_visibility='onchange')
-    total_uang = fields.Float(compute='_get_total',string='Jumlah Uang',track_visibility='onchange')
+    total_uang = fields.Monetary(compute='_get_total',string='Jumlah Uang',track_visibility='onchange')
     total_uang_terbilang = fields.Char(compute='_get_terbilang',string='Terbilang',track_visibility='onchange')
     dilaksanakan_pada_tanggal = fields.Date(string='Dilaksanakan pada tanggal', required=True,track_visibility='onchange')
     
@@ -86,12 +77,23 @@ class VoucherPermintaanKasbon(models.Model):
     
     active = fields.Boolean(string='active',default=True,track_visibility='onchange')
 
+    company_id = fields.Many2one('res.company', store=True, copy=False,
+        string="Company",
+        default=lambda self: self.env.user.company_id.id)
+    currency_id = fields.Many2one('res.currency', string="Currency",
+        related='company_id.currency_id',
+        default=lambda
+        self: self.env.user.company_id.currency_id.id)
+    
+    is_sudah_dipertanggungjawabkan = fields.Boolean(string="Is Sudah Di PertanggungJawabkan", compute="_get_is_sudah_dipertanggungjawabkan", default='_get_is_sudah_dipertanggungjawabkan')
+    
     is_owner = fields.Boolean(string="Is Visible Konfirmasi", compute="_get_is_owner_doc", default='_get_is_owner_doc')
     is_visible_konfimasi_button = fields.Boolean(string="Is Visible Konfirmasi", compute="_get_is_visible_konfimasi_button")
     is_visible_verifikasi_button = fields.Boolean(string="Is Visible Verifikasi", compute="_get_is_visible_verifikasi_button")
     is_visible_validasi_button = fields.Boolean(string="Is Visible Validasi", compute="_get_is_visible_validasi_button")
     is_visible_approval_button = fields.Boolean(string="Is Visible Approval", compute="_get_is_visible_approval_button")
     is_visible_reject_button = fields.Boolean(string="Is Visible Reject", compute="_get_is_visible_reject_button")
+    is_visible_print_button = fields.Boolean(string="Is Visible Print Button", compute="_get_is_visible_print_button")
     
     def _get_is_visible_reject_button(self):
         self.is_visible_reject_button = False
@@ -100,9 +102,17 @@ class VoucherPermintaanKasbon(models.Model):
         if self.state == 'confirmed' and  self.is_visible_verifikasi_button:
             self.is_visible_reject_button=True
         if self.state == 'verified' and  self.is_visible_validasi_button:
-            self.is_visible_validasi_button=True
+            self.is_visible_reject_button=True
         if self.state == 'validated' and  self.is_visible_approval_button:
             self.is_visible_reject_button=True  
+            
+    def _get_is_sudah_dipertanggungjawabkan(self):
+        self.is_sudah_dipertanggungjawabkan = False
+        doc = self.env['voucher.pertanggungjawaban.kasbon'].search([('voucher_permintaan_kasbon_id', '=', self.id)])
+        if doc :
+          for test in doc : 
+            if test.state != 'draft':
+              self.is_sudah_dipertanggungjawabkan=True
     
     def _get_is_owner_doc(self):
         self.is_owner = False
@@ -131,6 +141,11 @@ class VoucherPermintaanKasbon(models.Model):
         if  self.env.user.has_group('payment_voucher.submission_tracking_gep_group_approval') :
             self.is_visible_approval_button = True      
 
+    def _get_is_visible_print_button(self):
+        self.is_visible_print_button = False
+        if self.bpk_details_ids and self.is_visible_verifikasi_button:
+          self.is_visible_print_button = True  
+          
     @api.depends('uraian_rencana_penggunaan_uang_muka_ids')
     def _get_total(self):
         for rec_uraian in self.uraian_rencana_penggunaan_uang_muka_ids:
@@ -140,7 +155,6 @@ class VoucherPermintaanKasbon(models.Model):
     def _get_terbilang(self):
         t = terbilang.Terbilang()
         self.total_uang_terbilang =t.terbilang(self.total_uang, "IDR", 'id')
-        #self.total_uang_terbilang = payment_voucher_terbilang.terbilang(self.total_uang, "IDR", 'id')
     
     @api.multi
     def submit(self):
@@ -224,7 +238,17 @@ class VoucherPermintaanKasbon(models.Model):
           'divalidasi_tanggal':None,
           'keterangan':None
       }) 
-      
+            
+    def add_bpk(self): 
+      return {    
+        'name': "Tambah BPK",
+        'type': 'ir.actions.act_window',
+        'view_type': 'form',
+        'view_mode': 'form',
+        'res_model': 'bpk.details.voucher.permintaan.kasbon',
+        'target': 'new',
+        'context': {'default_voucher_kasbon_id': self.id, 'default_nominal': self.total_uang}
+      }
       
     @api.multi  
     def action_print_voucher_permintaan_kasbon(self):
@@ -262,15 +286,24 @@ class BpkDetailsVoucherKasbon(models.Model):
     _name = 'bpk.details.voucher.permintaan.kasbon'
     _description = 'list BPK Voucher Permintaan Kasbon'
     
-    nominal = fields.Monetary(string="Nominal",default=0.0,required=True,track_visibility='onchange')
-    Cek_billyet_no = fields.Char(string='Nomor Cek/Bilyet',track_visibility='onchange')
-    Cek_billyet_tanggal = fields.Date(string='Tanggal Cek/Bilyet',track_visibility='onchange')
-    bpk_no = fields.Char(string='BPK. No.',required=True,track_visibility='onchange')
-    bpk_tanggal = fields.Date(string='BPK Tanggal',required=True,track_visibility='onchange')
+    nominal = fields.Monetary(string="Nominal",default=0.0,required=True)
+    bpk_no = fields.Char(string='BPK. No.',required=True)
+    bpk_tanggal = fields.Date(string='BPK Tanggal',required=True)
+    
+    cara_pembayaran = fields.Selection(string="Cara Pembayaran", selection=[(1,'Cek / Giro / TT'),(2, 'Transfer'),(3, 'Tunai')], default=3, required=True)
+        
+    Cek_billyet_no = fields.Char(string='Nomor Cek/Bilyet')
+    Cek_billyet_tanggal = fields.Date(string='Tanggal Cek/Bilyet')
+    
+    bank_account_ids = fields.Many2one('master.config.bank.account', store=True, copy=False,
+        string="Nomer Account")
+    
     diterima_oleh = fields.Char( string='Diterima Oleh',track_visibility='onchange')
     diterima_tanggal = fields.Date(string='Diterima Tgl',track_visibility='onchange')
+    
     dibayar_oleh = fields.Many2one(comodel_name='res.users',track_visibility='onchange', string='Dibayar Oleh', default=lambda self: self.env.uid)
     dibayar_tanggal = fields.Date(string='Dibayar Tgl',track_visibility='onchange', default=fields.Date.today())
+    
     company_id = fields.Many2one('res.company', store=True, copy=False,
         string="Company",
         default=lambda self: self.env.user.company_id.id)
