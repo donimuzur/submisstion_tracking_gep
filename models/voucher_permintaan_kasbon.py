@@ -50,7 +50,8 @@ class VoucherPermintaanKasbon(models.Model):
     dilaksanakan_pada_tanggal = fields.Date(string='Dilaksanakan pada tanggal', required=True,track_visibility='onchange')
     
     uraian_rencana_penggunaan_uang_muka_ids =fields.One2many('uraian.rencana.penggunaan.uang.muka', 'voucher_kasbon_id', help='Daftar uraian pembayaran', required=True,track_visibility='onchange')
-      
+    voucher_pertanggungjawaban_kasbon_ids = fields.One2many('voucher.pertanggungjawaban.kasbon','voucher_permintaan_kasbon_id', help='List Voucher Pertanggungjawaban',track_visibility='onchange')  
+    
     bpk_details_ids = fields.One2many('bpk.details.voucher.permintaan.kasbon','voucher_kasbon_id', help='Daftar BPK',track_visibility='onchange')
     
     attachment_ids = fields.Many2many('ir.attachment',  string="Attachments",track_visibility='onchange')
@@ -94,6 +95,12 @@ class VoucherPermintaanKasbon(models.Model):
     is_visible_approval_button = fields.Boolean(string="Is Visible Approval", compute="_get_is_visible_approval_button")
     is_visible_reject_button = fields.Boolean(string="Is Visible Reject", compute="_get_is_visible_reject_button")
     is_visible_print_button = fields.Boolean(string="Is Visible Print Button", compute="_get_is_visible_print_button")
+    is_visible_set_to_finish_button = fields.Boolean(string="Is Visible Set To Finish Button", compute="_get_is_visible_set_to_finish_button")
+    
+    def _get_is_visible_set_to_finish_button(self):
+        self.is_visible_set_to_finish_button = False
+        if self.bpk_details_ids and self.is_visible_verifikasi_button:
+          self.is_visible_set_to_finish_button = True  
     
     def _get_is_visible_reject_button(self):
         self.is_visible_reject_button = False

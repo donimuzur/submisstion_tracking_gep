@@ -89,6 +89,12 @@ class VoucherPayable(models.Model):
     is_visible_approval_button = fields.Boolean(string="Is Visible Approval", compute="_get_is_visible_approval_button")
     is_visible_reject_button = fields.Boolean(string="Is Visible Reject", compute="_get_is_visible_reject_button")
     is_visible_print_button = fields.Boolean(string="Is Visible Print Button", compute="_get_is_visible_print_button")
+    is_visible_set_to_finish_button = fields.Boolean(string="Is Visible Set To Finish Button", compute="_get_is_visible_set_to_finish_button")
+    
+    def _get_is_visible_set_to_finish_button(self):
+        self.is_visible_set_to_finish_button = False
+        if self.bpk_details_ids and self.is_visible_verifikasi_button:
+          self.is_visible_set_to_finish_button = True  
         
     def _get_is_visible_reject_button(self):
         self.is_visible_reject_button = False
