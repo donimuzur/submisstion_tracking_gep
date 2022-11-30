@@ -57,29 +57,40 @@
                         </group>
                         <group>
                             <group>
+                                <field name="is_lower_than_zero" invisible="True"/>
                                 <field name="bayar_to" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="bayar_nik" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
                                 <field name="bayar_unit_kerja" attrs="{'readonly':['|',('state','!=','draft'),('is_owner','=',False)]}"/>
-                                <field name="total_uang_diterima"  attrs="{'invisible':[('state','=','draft')]}" readonly="1"/>
-                                <field name="total_uang_terbilang"  attrs="{'invisible':[('state','=','draft')]}" readonly="1"/>
-                                <field name="kekurangan_sisa_uang_muka"  attrs="{'invisible':[('state','=','draft')]}" readonly="1"/>
+                                
+                                <field name="kekurangan_sisa_uang_muka" string="kekurangan Uang Muka" readonly="1" attrs="{'invisible':['|',('is_lower_than_zero','=',True)]}"/>
+                                <field name="kekurangan_sisa_uang_muka" string="Sisa Uang Muka" readonly="1" attrs="{'invisible':['|',('is_lower_than_zero','=',False)]}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="total_uang_diterima" readonly="1"/>
+                                <field name="total_uang_diterima_terbilang" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="total_uang" readonly="1"/>
+                                <field name="total_uang_terbilang" readonly="1"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Uraian Penggunaan Uang Muka">
                                 <field name="uraian_penggunaan_uang_muka_ids" required='1' attrs="{'readonly':['|',('state','!=','draft'),('is_owner','!=',True)]}" widget="one2many_list" context="{'uraian_penggunaan_uang_muka_ids': uraian_penggunaan_uang_muka_ids}">
-                                    <tree editable="bottom" string="Uraian realisasi Penggunaan Uang Muka" create="false" >
+                                    <tree editable="bottom" string="Uraian realisasi Penggunaan Uang Muka" create="false" delete="false" >
                                         <field name="currency_id" invisible="1"/>
                                         <field name="name" readonly="1"/>
-                                        <field name="nominal" sum="Total" readonly="1"/>
-                                        <field name="nominal_realisasi" sum="Total"/>
+                                        <field name="nominal"  widget="monetary" readonly="1"/>
+                                        <field name="nominal_realisasi"  widget="monetary"/>
                                     </tree>
                                     <form>
                                         <group>
                                             <field name="currency_id" invisible="1"/>
                                             <field name="name" readonly="1"/>
-                                            <field name="nominal" sum="Total" readonly="1"/>
-                                            <field name="nominal_realisasi" sum="Total"/>
+                                            <field name="nominal"  widget="monetary" readonly="1"/>
+                                            <field name="nominal_realisasi"  widget="monetary"/>
                                         </group>
                                     </form>
                                 </field>
@@ -90,11 +101,11 @@
                                 </group>
                                 <group>
                                     <field name="bpk_details_ids" required='1' attrs="{'readonly':['|',('is_visible_verifikasi_button','!=',True),('state','!=','onprocess')]}" widget="one2many_list" context="{'bpk_details_ids': bpk_details_ids}">
-                                        <tree string="BPK Details" create="false" edit="false" delete="false">
+                                        <tree string="BPK Details" create="false" edit="false">
                                             <field name="currency_id" invisible="1"/>
                                             <field name="bpk_no" />
                                             <field name="bpk_tanggal" />
-                                            <field name="nominal" sum="Total"/>
+                                            <field name="nominal"  widget="monetary"/>
                                         </tree>
                                     </field>
                                 </group>
@@ -184,7 +195,7 @@
                             </group>
                             <group>
                                 <field name="cara_pembayaran" required="1"/>
-                                <field name="bank_account_ids" attrs="{'required':[('cara_pembayaran','in',[1,2])], 'invisible':[('cara_pembayaran','not in',[1,2])]}"/>
+                                <field name="bank_account_ids" required="1"/>
                                 <field name="Cek_billyet_no" attrs="{'required':[('cara_pembayaran','=',1)], 'invisible':[('cara_pembayaran','!=',1)]}"/>
                                 <field name="Cek_billyet_tanggal" attrs="{'required':[('cara_pembayaran','=',1)], 'invisible':[('cara_pembayaran','!=',1)]}"/>                                
                             </group>

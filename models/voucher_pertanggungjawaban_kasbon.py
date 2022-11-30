@@ -36,8 +36,9 @@ class VoucherPertanggungjawabanKasbon(models.Model):
     bayar_to = fields.Char(string='Nama', required=True,track_visibility='onchange')
     bayar_nik = fields.Char(string='NIK',track_visibility='onchange')
     bayar_unit_kerja = fields.Char(string='Unit Kerja',track_visibility='onchange')
-    total_uang = fields.Float(compute='_get_total',string='Jumlah Uang',track_visibility='onchange')
+    total_uang = fields.Monetary(compute='_get_total',string='Jumlah Uang Yang dipertanggungjawabkan',track_visibility='onchange')
     total_uang_diterima = fields.Monetary(compute='_get_total_diterima',string='Jumlah Uang yang diterima',track_visibility='onchange')
+    total_uang_diterima_terbilang = fields.Char(compute='_get_total_diterima_terbilang',string='Terbilang',track_visibility='onchange')
     kekurangan_sisa_uang_muka = fields.Monetary(compute='_get_sisa_kekurangan_uang_muka',string='kekurangan / Sisa Uang Muka ',track_visibility='onchange')
     total_uang_terbilang = fields.Char(compute='_get_terbilang',string='Terbilang',track_visibility='onchange')
     
@@ -86,6 +87,12 @@ class VoucherPertanggungjawabanKasbon(models.Model):
     is_visible_reject_button = fields.Boolean(string="Is Visible Reject", compute="_get_is_visible_reject_button")
     is_visible_print_button = fields.Boolean(string="Is Visible Print Button", compute="_get_is_visible_print_button")
     is_visible_set_to_finish_button = fields.Boolean(string="Is Visible Set To Finish Button", compute="_get_is_visible_set_to_finish_button")
+    is_lower_than_zero = fields.Boolean(string="Is lower than zero", compute="_get_is_lower_than_zero")
+    
+    def _get_is_lower_than_zero(self):
+      self.is_lower_than_zero = False
+      if self.kekurangan_sisa_uang_muka < 0 :
+        self.is_lower_than_zero = True
     
     def _get_is_visible_set_to_finish_button(self):
         self.is_visible_set_to_finish_button = False
@@ -156,9 +163,14 @@ class VoucherPertanggungjawabanKasbon(models.Model):
           
     @api.depends('total_uang')
     def _get_terbilang(self):
-        t = terbilang.Terbilang()
-        self.total_uang_terbilang =t.terbilang(self.total_uang, "IDR", 'id')
+      t = terbilang.Terbilang()
+      self.total_uang_terbilang =t.terbilang(self.total_uang, "IDR", 'id')
     
+    @api.depends('total_uang_diterima')
+    def _get_total_diterima_terbilang(self):
+      t = terbilang.Terbilang()
+      self.total_uang_diterima_terbilang =t.terbilang(self.total_uang_diterima, "IDR", 'id')
+                
     @api.multi
     def submit(self):
       state = 'submitted'
@@ -316,3 +328,7 @@ class BpkDetailsVoucherPertanggungjawabanKasbon(models.Model):
         index=True,
     )
     
+    @api.onchange('cara_pembayaran')
+    def _onchange_cara_pembayaran(self):
+      self.Cek_billyet_no = None      
+      self.Cek_billyet_tanggal = None

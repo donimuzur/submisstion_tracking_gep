@@ -336,77 +336,86 @@
                         </thead>
                         <tbody>
                             <tr style="height:100px">
-                                <td class="text-center" style="border:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
+                                <td class="text-center" style="border-top:1px solid black;border-left:1px solid black;border-right:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
                                     <t t-if="data.diajukan_oleh" >
                                         <img t-att-src="image_data_uri(image_signed)" width="100px"/>
                                     </t>
                                     <t t-else="" >
                                         <![CDATA[&nbsp;&nbsp;]]>
                                     </t>
-                                    <div>
-                                        <span t-if="data.diajukan_oleh" t-esc="data.diajukan_oleh.name"/>
-                                    </div>
                                 </td>
-                                <td class="text-center" style="border:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
+                                <td class="text-center" style="border-top:1px solid black;border-left:1px solid black;border-right:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
                                     <t t-if="data.direkomendasi_oleh" >
                                         <img t-att-src="image_data_uri(image_signed)" width="100px"/>
                                     </t>
                                     <t t-else="" >
                                         <![CDATA[&nbsp;&nbsp;]]>
                                     </t>
-                                    <div>
-                                        <span t-if="data.direkomendasi_oleh" t-esc="data.direkomendasi_oleh.name"/>
-                                    </div>
                                 </td>
-                                <td class="text-center" style="border:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
+                                <td class="text-center" style="border-top:1px solid black;border-left:1px solid black;border-right:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
                                     <t t-if="data.diverifikasi_oleh" >
                                         <img t-att-src="image_data_uri(image_signed)" width="100px"/>
                                     </t>
                                     <t t-else="">
                                         <![CDATA[&nbsp;&nbsp;]]>
                                     </t>
-                                    <div>
-                                        <span t-if="data.diverifikasi_oleh" t-esc="data.diverifikasi_oleh.name"/>
-                                    </div>
                                 </td>
-                                <td class="text-center" style="border:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
+                                <td class="text-center" style="border-top:1px solid black;border-left:1px solid black;border-right:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
                                     <t t-if="data.disetujui_oleh" >
                                         <img t-att-src="image_data_uri(image_signed)" width="100px"/>
                                     </t>
                                     <t t-else="" >
                                         <![CDATA[&nbsp;&nbsp;]]>
                                     </t>
-                                    <div>
-                                        <span t-if="data.disetujui_oleh" t-esc="data.disetujui_oleh.name"/>
-                                    </div>
                                 </td> 
-                                <td class="text-center" style="border:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
-                                    <t t-if="bpk_details.diterima_oleh" >
-                                        <img t-att-src="image_data_uri(image_signed)" width="100px"/>
-                                    </t>
-                                    <t t-else="" >
+                                <td class="text-center" style="border-top:1px solid black;border-left:1px solid black;border-right:1px solid black;width:20%;max-width:100%;vertical-align: middle;text-align:center;">
+                                    <t>
                                         <![CDATA[&nbsp;&nbsp;]]>
                                     </t>
-                                    <div>
-                                        <span t-if="bpk_details.diterima_oleh" t-esc="bpk_details.diterima_oleh"/>
-                                    </div>
                                 </td>   
                             </tr>
                             <tr>
+                                <td style="border-left:1px solid black;border-right:1px solid black;">
+                                    <div style="text-align:center">
+                                        <span t-if="data.diajukan_oleh" t-esc="data.diajukan_oleh.name"/>
+                                    </div>
+                                </td>
+                                <td style="border-left:1px solid black;border-right:1px solid black;">
+                                    <div style="text-align:center">
+                                        <span t-if="data.direkomendasi_oleh" t-esc="data.direkomendasi_oleh.name"/>
+                                    </div>
+                                </td>
+                                <td style="border-left:1px solid black;border-right:1px solid black;">
+                                    <div style="text-align:center">
+                                        <span t-if="data.diverifikasi_oleh" t-esc="data.diverifikasi_oleh.name"/>
+                                    </div>
+                                </td>
+                                <td style="border-left:1px solid black;border-right:1px solid black;">
+                                    <div style="text-align:center">
+                                        <span t-if="data.disetujui_oleh" t-esc="data.disetujui_oleh.name"/>
+                                    </div>
+                                </td>
+                                <td style="border-left:1px solid black;border-right:1px solid black;">
+                                    <div style="text-align:center">
+                                        <span t-if="bpk_details.diterima_oleh" t-esc="bpk_details.diterima_oleh"/>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td class="text-left"  style="border:1px solid black;">
-                                    <strong>Tgl.  <span t-esc="data.diajukan_tanggal"/></strong>
+                                    <strong>Tgl.   <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.diajukan_tanggal"/></strong>
                                 </td>
                                 <td class="text-left"  style="border:1px solid black;">
-                                    <strong>Tgl.  <span t-esc="data.direkomendasi_tanggal"/></strong>
+                                    <strong>Tgl.   <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.direkomendasi_tanggal"/></strong>
                                 </td>
                                 <td class="text-left"  style="border:1px solid black;">
-                                    <strong>Tgl.  <span t-esc="data.diverifikasi_tanggal"/></strong>
+                                    <strong>Tgl.   <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.diverifikasi_tanggal"/></strong>
                                 </td>
                                 <td class="text-left"  style="border:1px solid black;">
-                                    <strong>Tgl.  <span t-esc="data.disetujui_tanggal"/></strong>
+                                    <strong>Tgl.   <![CDATA[&nbsp;&nbsp;]]><span t-esc="data.disetujui_tanggal"/></strong>
                                 </td>
                                 <td class="text-left"  style="border:1px solid black;">
-                                    <strong>Tgl.  <span t-esc="bpk_details.diterima_tanggal"/></strong>
+                                    <strong>Tgl.   <![CDATA[&nbsp;&nbsp;]]><span t-esc="bpk_details.diterima_tanggal"/></strong>
                                 </td>
                             </tr>
                             <tr>
@@ -422,6 +431,7 @@
             model="voucher.pertanggungjawaban.kasbon"
             string="Print Voucher pertanggungjawaban Kasbon"
             report_type="qweb-pdf"
+            menu="False"
             name="payment_voucher.report_voucher_pertanggungjawaban_kasbon"
             attachment_use="False"
             paperformat="payment_voucher.paperFormat_payment_voucher"

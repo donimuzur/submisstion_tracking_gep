@@ -247,6 +247,10 @@ class VoucherPermintaanKasbon(models.Model):
       }) 
             
     def add_bpk(self): 
+      total_bpk = 0
+      for bpk_details in self.bpk_details_ids:
+        total_bpk = total_bpk+bpk_details.nominal
+        
       return {    
         'name': "Tambah BPK",
         'type': 'ir.actions.act_window',
@@ -254,7 +258,7 @@ class VoucherPermintaanKasbon(models.Model):
         'view_mode': 'form',
         'res_model': 'bpk.details.voucher.permintaan.kasbon',
         'target': 'new',
-        'context': {'default_voucher_kasbon_id': self.id, 'default_nominal': self.total_uang}
+        'context': {'default_voucher_kasbon_id': self.id, 'default_nominal': self.total_uang-total_bpk}
       }
       
     @api.multi  
@@ -282,10 +286,15 @@ class PrintVoucherPermintaanKasbon(models.AbstractModel):
         f_signed = open(filename_signed, mode="rb")
         image_signed = f_signed.read()
         image_signed = base64.b64encode(image_signed)    
+        
+        scr_brtahap = False
+        if len(data_voucher.bpk_details_ids) > 1 :
+          scr_brtahap = True
         return {
             'image' : image,  
             'image_signed':image_signed,
-            'data': data_voucher
+            'data': data_voucher,
+            'scr_bertahap':scr_brtahap,
         }
 
 
@@ -324,3 +333,9 @@ class BpkDetailsVoucherKasbon(models.Model):
         store=True,
         index=True,
     )
+    
+    @api.onchange('cara_pembayaran')
+    def _onchange_cara_pembayaran(self):
+      self.Cek_billyet_no = None      
+      self.Cek_billyet_tanggal = None
+    

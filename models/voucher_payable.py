@@ -51,7 +51,7 @@ class VoucherPayable(models.Model):
     total_uang = fields.Monetary(compute='_get_total',string='Jumlah Uang',track_visibility='onchange')
     total_uang_terbilang = fields.Char(compute='_get_terbilang',string='Terbilang',track_visibility='onchange')
     attachment_ids = fields.Many2many('ir.attachment',  string="Attachments",track_visibility='onchange', attachment=True)
-    
+        
     diajukan_oleh = fields.Many2one(comodel_name='res.users', string='Diajukan Oleh')
     diajukan_tanggal = fields.Date(string='Diajukan Tgl')
     
@@ -233,6 +233,10 @@ class VoucherPayable(models.Model):
       }) 
       
     def add_bpk(self): 
+      total_bpk = 0
+      for bpk_details in self.bpk_details_ids:
+        total_bpk = total_bpk+bpk_details.nominal
+      
       return {    
         'name': "Tambah BPK",
         'type': 'ir.actions.act_window',
@@ -240,7 +244,7 @@ class VoucherPayable(models.Model):
         'view_mode': 'form',
         'res_model': 'bpk.details.voucher.payable',
         'target': 'new',
-        'context': {'default_voucher_id': self.id, 'default_nominal': self.total_uang}
+        'context': {'default_voucher_id': self.id, 'default_nominal': self.total_uang-total_bpk}
       }
       
     @api.multi  
@@ -267,10 +271,15 @@ class PrintVoucherPayable(models.AbstractModel):
         f_signed = open(filename_signed, mode="rb")
         image_signed = f_signed.read()
         image_signed = base64.b64encode(image_signed)    
+        
+        scr_brtahap = False
+        if len(data_voucher.bpk_details_ids) > 1 :
+          scr_brtahap = True
         return {
             'image' : image,  
             'image_signed':image_signed,
-            'data': data_voucher
+            'data': data_voucher,
+            'scr_bertahap':scr_brtahap,
         }
 
 class BpkDetailsVoucherPayable(models.Model):
@@ -285,6 +294,9 @@ class BpkDetailsVoucherPayable(models.Model):
         
     Cek_billyet_no = fields.Char(string='Nomor Cek/Bilyet')
     Cek_billyet_tanggal = fields.Date(string='Tanggal Cek/Bilyet')
+    
+    diterima_oleh = fields.Char(string='Diterima Oleh')
+    diterima_tanggal = fields.Date(string='Diterima Tgl')
     
     bank_account_ids = fields.Many2one('master.config.bank.account', store=True, copy=False,
         string="Nomer Account")
@@ -302,3 +314,10 @@ class BpkDetailsVoucherPayable(models.Model):
         store=True,
         index=True,
     )
+    
+    @api.onchange('cara_pembayaran')
+    def _onchange_cara_pembayaran(self):
+      self.Cek_billyet_no = None      
+      self.Cek_billyet_tanggal = None
+    
+    
